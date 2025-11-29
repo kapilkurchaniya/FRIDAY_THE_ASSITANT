@@ -1,0 +1,42 @@
+# Virtual environment
+.venv/
+env/
+
+# Only ignore real env files, NOT the example
+.env
+*.env
+!.env.example
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Build / Distribution folders
+build/
+dist/
+*.spec
+
+# Executables
+*.exe
+*.dll
+
+# Installer / Uninstaller metadata
+Uninstall.dat
+Uninstall_lang.ifl
+
+# Frontend (if using npm/yarn)
+Frontend/node_modules/
+Frontend/.cache/
+
+# Logs
+*.log
+
+# IDE / Editor files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
