@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>FRIDAY - AI Chat Interface</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed": "#ffdbc9",
+                    "outline": "#869394",
+                    "tertiary-fixed-dim": "#ffb68c",
+                    "surface-tint": "#58d8e0",
+                    "surface-container-lowest": "#090f0f",
+                    "on-primary-container": "#003b3e",
+                    "tertiary": "#ffb68c",
+                    "surface-container-low": "#171d1d",
+                    "on-surface": "#dee4e3",
+                    "on-secondary-fixed": "#002022",
+                    "surface-dim": "#0f1415",
+                    "secondary-container": "#254f52",
+                    "secondary": "#a3ced1",
+                    "inverse-on-surface": "#2c3132",
+                    "background": "#0f1415",
+                    "primary-fixed": "#78f5fd",
+                    "on-secondary-container": "#95c0c3",
+                    "on-tertiary-fixed-variant": "#753400",
+                    "on-tertiary": "#532200",
+                    "error-container": "#93000a",
+                    "surface-container-high": "#252b2b",
+                    "primary-container": "#15aeb6",
+                    "on-background": "#dee4e3",
+                    "surface-bright": "#343a3a",
+                    "on-tertiary-container": "#592600",
+                    "on-error": "#690005",
+                    "on-tertiary-fixed": "#321200",
+                    "error": "#ffb4ab",
+                    "on-primary": "#00373a",
+                    "on-surface-variant": "#bcc9ca",
+                    "surface": "#0f1415",
+                    "secondary-fixed": "#beebee",
+                    "on-error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#a3ced1",
+                    "on-secondary-fixed-variant": "#224d50",
+                    "primary": "#58d8e0",
+                    "outline-variant": "#3c494a",
+                    "inverse-surface": "#dee4e3",
+                    "inverse-primary": "#00696e",
+                    "surface-container-highest": "#303636",
+                    "on-secondary": "#043639",
+                    "on-primary-fixed-variant": "#004f53",
+                    "tertiary-container": "#e2864c",
+                    "primary-fixed-dim": "#58d8e0",
+                    "surface-container": "#1b2121",
+                    "surface-variant": "#303636",
+                    "on-primary-fixed": "#002022"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "stack-sm": "0.5rem",
+                    "stack-md": "1rem",
+                    "orbit-gap": "2rem",
+                    "core-margin": "4rem",
+                    "gutter": "1.5rem"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "display-lg": ["Space Grotesk"],
+                    "label-mono": ["Space Mono"],
+                    "body-sm": ["Inter"],
+                    "headline-md": ["Space Grotesk"],
+                    "display-lg-mobile": ["Space Grotesk"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "label-mono": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "1.5", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "1.1", "letterSpacing": "0.05em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+    <style>
+        /* ===== Custom Utilities ===== */
+        .glow-sm { text-shadow: 0 0 10px rgba(88, 216, 224, 0.6); }
+        .glow-box-sm { box-shadow: 0 0 15px rgba(88, 216, 224, 0.2); }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* ===== Animations ===== */
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 0.15; transform: scale(1); }
+            50% { opacity: 0.35; transform: scale(1.1); }
+        }
+        .animate-pulse-slow { animation: pulse-slow 8s ease-in-out infinite; }
+
+        @keyframes blink { 50% { opacity: 0; } }
+        .cursor-blink::after {
+            content: '█'; animation: blink 1s step-start infinite;
+            color: #58d8e0; margin-left: 4px;
+        }
+
+        @keyframes core-ping {
+            0% { transform: scale(1); opacity: 0.8; }
+            75% { transform: scale(2); opacity: 0; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+
+        /* ===== View System ===== */
+        .view-panel { display: none; }
+        .view-panel.active { display: flex; }
+
+        /* ===== Orbit Card (Research Hub) ===== */
+        .orbit-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(88, 216, 224, 0.1);
+            position: relative;
+        }
+        .orbit-card::before {
+            content: ''; position: absolute; inset: 0;
+            border: 1px solid transparent;
+            background: linear-gradient(135deg, rgba(88,216,224,0.5) 0%, transparent 20%, transparent 80%, rgba(88,216,224,0.5) 100%) border-box;
+            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor; mask-composite: exclude;
+            pointer-events: none; border-radius: inherit;
+        }
+
+        /* ===== Particle BG ===== */
+        .particle-bg {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background-image: radial-gradient(circle at 50% 50%, rgba(88,216,224,0.05) 0%, transparent 50%);
+        }
+
+        /* ===== HUD Grid ===== */
+        .hud-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.5rem; }
+
+        /* ===== Orb states ===== */
+        .orb-idle .orb-inner { animation: pulse-slow 8s ease-in-out infinite; }
+        .orb-listening .orb-inner { animation: pulse-slow 3s ease-in-out infinite; box-shadow: 0 0 60px rgba(88,216,224,0.5); }
+        .orb-thinking .orb-inner { animation: pulse-slow 4s ease-in-out infinite; box-shadow: 0 0 40px rgba(255,182,140,0.4); }
+        .orb-speaking .orb-inner { animation: pulse-slow 5s ease-in-out infinite; box-shadow: 0 0 60px rgba(88,216,224,0.4); }
+
+        .orb-listening .orb-ping { animation: core-ping 3s cubic-bezier(0,0,0.2,1) infinite; }
+        .orb-thinking .orb-ping { animation: core-ping 4s cubic-bezier(0,0,0.2,1) infinite; background: rgba(255,182,140,0.4); }
+        .orb-speaking .orb-ping { animation: core-ping 5s cubic-bezier(0,0,0.2,1) infinite; }
+    </style>
+</head>
+<body class="bg-black text-on-surface h-screen w-screen overflow-hidden relative flex flex-col font-body-lg text-body-lg selection:bg-primary-fixed selection:text-on-primary-fixed">
+
+    <!-- ============================================================ -->
+    <!-- SHARED: Background Aura / Voice Core (always visible)        -->
+    <!-- ============================================================ -->
+    <div id="voice-core-bg" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 pointer-events-none flex justify-center items-center orb-idle">
+        <div class="absolute w-[600px] h-[600px] rounded-full bg-primary-container blur-[120px] animate-pulse-slow orb-inner"></div>
+        <div class="absolute w-[200px] h-[200px] rounded-full bg-primary-fixed blur-[60px] opacity-30 animate-pulse orb-inner"></div>
+        <div class="absolute w-[50px] h-[50px] rounded-full bg-surface-tint blur-[20px] opacity-80 orb-ping"></div>
+    </div>
+    <div class="particle-bg"></div>
+
+    <!-- ============================================================ -->
+    <!-- SHARED: Top App Bar                                          -->
+    <!-- ============================================================ -->
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter md:px-core-margin py-stack-md bg-gradient-to-b from-black via-black/80 to-transparent pointer-events-none">
+        <h1 class="font-label-mono text-label-mono text-outline uppercase tracking-[0.2em] opacity-40 pointer-events-auto cursor-pointer" onclick="switchView('idle')">
+            FRIDAY — MADE BY KAPIL
+        </h1>
+        <div class="flex items-center gap-4 pointer-events-auto">
+            <div id="status-badge" class="font-label-mono text-[10px] text-primary-fixed-dim uppercase tracking-widest bg-primary/10 px-3 py-1 rounded-sm border border-primary/20 hidden">
+                <span id="status-text">PROCESSING</span>
+            </div>
+            <span class="material-symbols-outlined text-outline-variant hover:text-primary-fixed hover:glow-sm transition-all duration-300 cursor-pointer hidden md:block" style="font-variation-settings: 'FILL' 0;">settings</span>
+        </div>
+    </header>
+
+    <!-- ============================================================ -->
+    <!-- VIEW 1: IDLE — Voice Core (Default)                          -->
+    <!-- ============================================================ -->
+    <div id="view-idle" class="view-panel active flex-col items-center justify-center h-full w-full relative z-10">
+        <!-- Center status text -->
+        <div class="flex flex-col items-center gap-4 mb-8 mt-auto">
+            <span id="orb-state-label" class="font-label-mono text-label-mono text-primary-fixed-dim uppercase tracking-[0.3em] glow-sm opacity-70">IDLE</span>
+        </div>
+
+        <!-- Mic button — hero element -->
+        <button id="voice-btn-idle" class="w-24 h-24 rounded-full bg-primary-fixed/10 border-2 border-primary-fixed/30 flex items-center justify-center hover:bg-primary-fixed/20 hover:border-primary-fixed/60 transition-all duration-300 glow-box-sm group mb-8">
+            <span class="material-symbols-outlined text-primary-fixed text-[40px] group-hover:scale-110 transition-transform" style="font-variation-settings: 'FILL' 1;">mic</span>
+        </button>
+
+        <!-- Command input -->
+        <div class="w-full max-w-xl px-gutter mb-auto">
+            <div class="relative w-full flex items-center border-b border-outline-variant/50 pb-2 focus-within:border-primary-fixed-dim transition-colors group">
+                <span class="material-symbols-outlined text-primary-fixed-dim absolute left-0 text-lg opacity-50 group-focus-within:opacity-100 transition-opacity">chevron_right</span>
+                <input id="command-input-idle" autocomplete="off" class="w-full bg-transparent border-none focus:ring-0 text-on-surface font-label-mono text-label-mono pl-8 placeholder:text-outline/50 placeholder:tracking-widest outline-none" placeholder="Awaiting command sequence..." type="text">
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- VIEW 2: NEURAL CHAT                                          -->
+    <!-- ============================================================ -->
+    <div id="view-chat" class="view-panel flex-col h-full w-full relative z-10">
+        <!-- Chat Canvas -->
+        <main id="chat-canvas" class="flex-1 w-full max-w-5xl mx-auto h-full pt-[100px] pb-[180px] px-gutter overflow-y-auto z-10 relative flex flex-col gap-orbit-gap scrollbar-hide">
+            <!-- System Init -->
+            <div class="w-full flex justify-center mb-orbit-gap opacity-50">
+                <span class="font-label-mono text-label-mono text-outline uppercase tracking-widest text-xs">
+                    — Secure Connection Established —
+                </span>
+            </div>
+            <!-- Chat messages will be injected here -->
+            <div id="chat-messages"></div>
+            <div class="h-[50px] w-full shrink-0"></div>
+        </main>
+
+        <!-- Chat Input -->
+        <footer class="fixed bottom-0 left-0 w-full z-50 flex flex-col items-center pb-8 md:pb-core-margin pt-stack-md bg-gradient-to-t from-black via-black/90 to-transparent">
+            <div class="w-full max-w-3xl px-gutter mb-4">
+                <div class="relative w-full flex items-center border-b border-outline-variant/50 pb-2 focus-within:border-primary-fixed-dim transition-colors group">
+                    <span class="material-symbols-outlined text-primary-fixed-dim absolute left-0 text-lg opacity-50 group-focus-within:opacity-100 transition-opacity">chevron_right</span>
+                    <input id="command-input-chat" autocomplete="off" class="w-full bg-transparent border-none focus:ring-0 text-on-surface font-label-mono text-label-mono pl-8 pr-10 placeholder:text-outline/50 placeholder:tracking-widest outline-none" placeholder="Awaiting command sequence..." type="text">
+                    <button id="voice-btn-chat" class="absolute right-0 text-outline hover:text-primary-fixed transition-colors">
+                        <span class="material-symbols-outlined text-sm">mic</span>
+                    </button>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- VIEW 3: RESEARCH HUB                                        -->
+    <!-- ============================================================ -->
+    <div id="view-research" class="view-panel flex-col h-full w-full relative z-10 overflow-y-auto scrollbar-hide">
+        <main class="flex-grow p-gutter md:p-core-margin pt-[100px] relative z-10 w-full max-w-[1600px] mx-auto pb-[120px]">
+            <div class="hud-grid">
+                <!-- Visual Data Section -->
+                <section class="col-span-12 lg:col-span-8 flex flex-col gap-gutter">
+                    <div class="flex items-center gap-stack-sm border-b border-outline-variant/30 pb-stack-sm">
+                        <span class="material-symbols-outlined text-primary-fixed-dim text-[16px]">visibility</span>
+                        <h2 class="font-label-mono text-label-mono text-on-surface uppercase tracking-widest">Visual Data / Search Results</h2>
+                    </div>
+                    <div id="research-visual-grid" class="grid grid-cols-1 md:grid-cols-2 gap-gutter min-h-[400px]">
+                        <!-- Populated dynamically -->
+                        <div class="orbit-card rounded-xl overflow-hidden relative group h-full flex items-center justify-center min-h-[300px]">
+                            <span class="font-label-mono text-label-mono text-outline/40 uppercase tracking-widest">Awaiting Search Data…</span>
+                        </div>
+                        <div class="orbit-card rounded-xl overflow-hidden relative group h-full flex items-center justify-center min-h-[300px]">
+                            <span class="font-label-mono text-label-mono text-outline/40 uppercase tracking-widest">Awaiting Search Data…</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Signal Streams (AI Summary) -->
+                <section class="col-span-12 lg:col-span-4 flex flex-col gap-gutter">
+                    <div class="flex items-center gap-stack-sm border-b border-outline-variant/30 pb-stack-sm">
+                        <span class="material-symbols-outlined text-tertiary-fixed-dim text-[16px]">sensors</span>
+                        <h2 class="font-label-mono text-label-mono text-on-surface uppercase tracking-widest">AI Summary</h2>
+                    </div>
+                    <div id="research-summary-card" class="orbit-card rounded-xl p-6 flex flex-col gap-4">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary-fixed-dim text-sm" style="font-variation-settings: 'FILL' 1;">graphic_eq</span>
+                            <span class="font-label-mono text-label-mono text-primary-fixed-dim uppercase">[ FRIDAY ]</span>
+                        </div>
+                        <p class="font-body-lg text-body-sm text-on-surface leading-relaxed" id="research-ai-answer">
+                            No research query active. Ask Friday to search for something.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Neural Feed -->
+                <section class="col-span-12 flex flex-col gap-gutter mt-orbit-gap">
+                    <div class="flex items-center gap-stack-sm border-b border-outline-variant/30 pb-stack-sm">
+                        <span class="material-symbols-outlined text-primary-fixed-dim text-[16px]">dynamic_feed</span>
+                        <h2 class="font-label-mono text-label-mono text-on-surface uppercase tracking-widest">Neural Feed — Sources</h2>
+                    </div>
+                    <div id="research-feed" class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+                        <!-- Populated dynamically -->
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SHARED: Bottom Navigation                                    -->
+    <!-- ============================================================ -->
+    <nav id="bottom-nav" class="fixed bottom-0 left-0 w-full z-[60] flex justify-center items-center pb-4 md:pb-6 bg-gradient-to-t from-black/60 to-transparent pointer-events-none">
+        <div class="flex gap-stack-md items-center bg-surface-container-low/30 backdrop-blur-md px-4 py-2 rounded-full border border-white/5 pointer-events-auto">
+            <button onclick="switchView('idle')" class="nav-btn font-label-mono text-label-mono text-outline hover:text-primary-fixed transition-colors flex items-center gap-1 group relative" data-view="idle">
+                <span class="text-primary-fixed opacity-0 group-hover:opacity-100 transition-opacity duration-300">[</span>
+                <span class="material-symbols-outlined text-[16px] mr-1">radio_button_checked</span>CORE
+                <span class="text-primary-fixed opacity-0 group-hover:opacity-100 transition-opacity duration-300">]</span>
+            </button>
+            <div class="w-[2px] h-3 bg-outline-variant/50 rounded-full"></div>
+            <button onclick="switchView('chat')" class="nav-btn font-label-mono text-label-mono text-outline hover:text-primary-fixed transition-colors flex items-center gap-1 group relative" data-view="chat">
+                <span class="text-primary-fixed opacity-0 group-hover:opacity-100 transition-opacity duration-300">[</span>
+                <span class="material-symbols-outlined text-[16px] mr-1">chat</span>CHAT
+                <span class="text-primary-fixed opacity-0 group-hover:opacity-100 transition-opacity duration-300">]</span>
+            </button>
+            <div class="w-[2px] h-3 bg-outline-variant/50 rounded-full"></div>
+            <button onclick="switchView('research')" class="nav-btn font-label-mono text-label-mono text-outline hover:text-primary-fixed transition-colors flex items-center gap-1 group relative" data-view="research">
+                <span class="text-primary-fixed opacity-0 group-hover:opacity-100 transition-opacity duration-300">[</span>
+                <span class="material-symbols-outlined text-[16px] mr-1">travel_explore</span>RESEARCH
+                <span class="text-primary-fixed opacity-0 group-hover:opacity-100 transition-opacity duration-300">]</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hidden Audio Player -->
+    <audio id="tts-audio" style="display:none;"></audio>
+
+    <!-- ============================================================ -->
+    <!-- JAVASCRIPT ENGINE                                            -->
+    <!-- ============================================================ -->
+    <script>
+    // ── References ──────────────────────────────────────────────────
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => document.querySelectorAll(s);
+
+    const views = { idle: $('#view-idle'), chat: $('#view-chat'), research: $('#view-research') };
+    const orbBg = $('#voice-core-bg');
+    const stateLabel = $('#orb-state-label');
+    const statusBadge = $('#status-badge');
+    const statusText = $('#status-text');
+    const ttsAudio = $('#tts-audio');
+    const chatMessages = $('#chat-messages');
+    const chatCanvas = $('#chat-canvas');
+
+    let currentView = 'idle';
+
+    // ── View Switching ──────────────────────────────────────────────
+    function switchView(name) {
+        currentView = name;
+        Object.values(views).forEach(v => v.classList.remove('active'));
+        views[name].classList.add('active');
+
+        // Update nav active state
+        $$('.nav-btn').forEach(btn => {
+            const isActive = btn.dataset.view === name;
+            btn.classList.toggle('text-primary-fixed-dim', isActive);
+            btn.classList.toggle('glow-sm', isActive);
+            btn.classList.toggle('text-outline', !isActive);
+            // Show brackets for active
+            const brackets = btn.querySelectorAll('span.text-primary-fixed');
+            brackets.forEach(b => {
+                b.style.opacity = isActive ? '1' : '';
+            });
+        });
+
+        // Hide the chat footer nav when not in chat view so it doesn't overlap
+        const chatFooter = views.chat.querySelector('footer');
+        if (chatFooter) chatFooter.style.display = name === 'chat' ? '' : 'none';
+    }
+    // Initialize
+    switchView('idle');
+
+    // ── Orb State ───────────────────────────────────────────────────
+    function setOrbState(state) {
+        orbBg.className = orbBg.className.replace(/orb-\w+/g, '');
+        orbBg.classList.add(`orb-${state}`);
+        const labels = { idle: 'IDLE', listening: 'LISTENING', thinking: 'THINKING', speaking: 'SPEAKING' };
+        stateLabel.textContent = labels[state] || state.toUpperCase();
+    }
+
+    // ── Speech Recognition ──────────────────────────────────────────
+    let recognition = null;
+    let isProcessing = false;
+    let alwaysListenEnabled = true;
+    let speechTimeout = null;
+    let finalTranscript = '';
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SR();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        recognition.onstart = () => {
+            setOrbState('listening');
+            statusBadge.classList.remove('hidden');
+            statusText.textContent = 'LISTENING';
+        };
+
+        recognition.onresult = (e) => {
+            // Build transcript from all results
+            let interim = '';
+            finalTranscript = '';
+            for (let i = 0; i < e.results.length; i++) {
+                if (e.results[i].isFinal) {
+                    finalTranscript += e.results[i][0].transcript;
+                } else {
+                    interim += e.results[i][0].transcript;
+                }
+            }
+
+            // Show what we're hearing in the input field
+            const displayText = finalTranscript + interim;
+            if (currentView === 'chat') {
+                $('#command-input-chat').value = displayText;
+            } else {
+                $('#command-input-idle').value = displayText;
+            }
+
+            // Reset the 2-second silence timer every time new speech arrives
+            clearTimeout(speechTimeout);
+            speechTimeout = setTimeout(() => {
+                const fullText = (finalTranscript + interim).trim();
+                if (fullText.length > 0) {
+                    // Stop recognition, process the query
+                    try { recognition.stop(); } catch(err) {}
+                    processQuery(fullText);
+                    finalTranscript = '';
+                }
+            }, 2000); // 2 seconds of silence = done speaking
+        };
+
+        recognition.onend = () => {
+            // Auto-restart if not processing
+            if (alwaysListenEnabled && !isProcessing) {
+                setTimeout(() => {
+                    try { recognition.start(); } catch(e) {}
+                }, 300);
+            }
+        };
+
+        recognition.onerror = (e) => {
+            console.error('Speech recognition error:', e.error);
+            if (e.error === 'no-speech' || e.error === 'aborted') {
+                return; // Will auto-restart via onend
+            }
+            setOrbState('idle');
+            statusBadge.classList.add('hidden');
+        };
+    }
+
+    function startListening() {
+        if (recognition) {
+            alwaysListenEnabled = true;
+            try { recognition.start(); } catch(e) { /* already started */ }
+        } else {
+            alert('Speech recognition not supported in this browser. Use Chrome or Edge.');
+        }
+    }
+
+    // Auto-start listening on page load
+    setTimeout(() => startListening(), 1000);
+
+    // Voice buttons (also act as toggle)
+    $('#voice-btn-idle').addEventListener('click', startListening);
+    $('#voice-btn-chat').addEventListener('click', startListening);
+
+    // ── Keyboard Enter ──────────────────────────────────────────────
+    function handleEnter(inputEl) {
+        inputEl.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && inputEl.value.trim()) {
+                processQuery(inputEl.value.trim());
+                inputEl.value = '';
+            }
+        });
+    }
+    handleEnter($('#command-input-idle'));
+    handleEnter($('#command-input-chat'));
+
+    // ── Chat Message Rendering ──────────────────────────────────────
+    function addChatMessage(role, text, isThinking) {
+        const wrapper = document.createElement('div');
+        const isUser = role === 'user';
+        wrapper.className = `${isUser ? 'self-end items-end' : 'self-start'} max-w-[85%] md:max-w-[70%] flex flex-col gap-stack-sm group mt-stack-md`;
+
+        const label = isUser ? '[ YOU ]' : '[ FRIDAY ]';
+        const iconName = isUser ? 'person' : 'graphic_eq';
+        const labelColor = isUser ? 'text-outline' : 'text-primary-fixed-dim';
+        const iconFill = isUser ? '0' : '1';
+        const pulseClass = isThinking ? 'animate-pulse' : '';
+
+        const cardBg = isUser
+            ? 'bg-surface-container-low/50 backdrop-blur-[10px] border-outline-variant/30 rounded-tr-sm'
+            : 'bg-white/[0.02] backdrop-blur-[20px] border-white/[0.05] rounded-tl-sm hover:border-primary-fixed/20 hover:bg-white/[0.04]';
+        const edgeHighlight = isUser ? '' : `
+            <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-primary-fixed/50 to-transparent"></div>
+            <div class="absolute top-0 left-0 w-[1px] h-full bg-gradient-to-b from-primary-fixed/50 to-transparent"></div>
+        `;
+        const cursorClass = isThinking ? 'cursor-blink' : '';
+        const textColor = isUser ? 'text-inverse-surface' : 'text-on-surface';
+
+        wrapper.innerHTML = `
+            <div class="flex items-center gap-2 ${isUser ? 'pr-2' : 'pl-2'}">
+                ${isUser ? '' : `<span class="material-symbols-outlined ${labelColor} text-sm ${pulseClass}" style="font-variation-settings: 'FILL' ${iconFill};">${iconName}</span>`}
+                <span class="font-label-mono text-label-mono ${labelColor} uppercase">${label}</span>
+                ${isUser ? `<span class="material-symbols-outlined ${labelColor} text-sm">${iconName}</span>` : ''}
+            </div>
+            <div class="${cardBg} border rounded-xl p-stack-md relative overflow-hidden transition-all duration-500 ${isThinking ? 'glow-box-sm' : ''}">
+                ${edgeHighlight}
+                <p class="font-body-lg text-body-lg ${textColor} leading-relaxed ${cursorClass}">${text}</p>
+            </div>
+        `;
+        chatMessages.appendChild(wrapper);
+        chatCanvas.scrollTop = chatCanvas.scrollHeight;
+        return wrapper;
+    }
+
+    // ── Research Hub Rendering ───────────────────────────────────────
+    function renderResearchResults(answer, searchData) {
+        // AI Summary
+        $('#research-ai-answer').innerHTML = answer.replace(/\n/g, '<br>');
+
+        // Visual Grid (top 2 results with images)
+        const visualGrid = $('#research-visual-grid');
+        visualGrid.innerHTML = '';
+        const withImages = searchData.filter(s => s.image_url);
+        const topVisuals = withImages.length > 0 ? withImages.slice(0, 2) : searchData.slice(0, 2);
+
+        topVisuals.forEach((item, i) => {
+            let hostname = 'SOURCE';
+            try { hostname = new URL(item.url).hostname; } catch(e){}
+            const imgSrc = item.image_url || '';
+            const imgTag = imgSrc ? `<img src="${imgSrc}" class="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500" alt="">` : `<div class="w-full h-full bg-surface-container-low flex items-center justify-center"><span class="material-symbols-outlined text-primary-fixed-dim text-[48px] opacity-30">image</span></div>`;
+
+            visualGrid.innerHTML += `
+                <div class="orbit-card rounded-xl overflow-hidden relative group h-full min-h-[300px] cursor-pointer" onclick="window.open('${item.url}','_blank')">
+                    <div class="absolute top-2 left-2 z-20 bg-surface-container-lowest/80 backdrop-blur-md px-2 py-1 border border-secondary/30 rounded">
+                        <span class="font-label-mono text-label-mono text-secondary">${hostname.toUpperCase().slice(0,20)}</span>
+                    </div>
+                    ${imgTag}
+                    <div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-background/90 to-transparent">
+                        <p class="font-body-sm text-body-sm text-on-surface">${item.title}</p>
+                    </div>
+                </div>`;
+        });
+        // Fill empty slots
+        while (visualGrid.children.length < 2) {
+            visualGrid.innerHTML += `<div class="orbit-card rounded-xl overflow-hidden relative group h-full flex items-center justify-center min-h-[300px]"><span class="font-label-mono text-label-mono text-outline/40 uppercase tracking-widest">No Data</span></div>`;
+        }
+
+        // Neural Feed (all results as cards)
+        const feed = $('#research-feed');
+        feed.innerHTML = '';
+        searchData.forEach((item, i) => {
+            let hostname = 'SOURCE';
+            try { hostname = new URL(item.url).hostname; } catch(e){}
+            const tags = ['Research', 'Analysis', 'Signal', 'Report'];
+            const tagColors = ['text-primary border-primary/30', 'text-tertiary border-tertiary/30', 'text-secondary border-secondary/30', 'text-primary-fixed-dim border-primary-fixed/30'];
+
+            feed.innerHTML += `
+                <div class="orbit-card rounded-lg p-stack-md flex flex-col gap-stack-md hover:bg-surface-container-lowest/40 transition-colors">
+                    <div class="flex justify-between items-start">
+                        <span class="font-label-mono text-[10px] ${tagColors[i % tagColors.length]} border px-2 py-0.5 rounded uppercase tracking-wider">${tags[i % tags.length]}</span>
+                        <span class="font-label-mono text-[10px] text-outline-variant">${hostname}</span>
+                    </div>
+                    <h3 class="font-headline-md text-headline-md text-on-surface text-[18px] leading-tight" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${item.title}</h3>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant" style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">${item.content}</p>
+                    <div class="mt-auto pt-4 flex items-center justify-between border-t border-outline-variant/20">
+                        <button onclick="window.open('${item.url}','_blank')" class="font-label-mono text-label-mono text-primary-fixed-dim hover:text-primary flex items-center gap-1 group">
+                            <span class="text-outline-variant group-hover:text-primary-fixed transition-colors">[</span>
+                            VIEW SOURCE
+                            <span class="text-outline-variant group-hover:text-primary-fixed transition-colors">]</span>
+                        </button>
+                    </div>
+                </div>`;
+        });
+    }
+
+    // ── Core: Process Query ─────────────────────────────────────────
+    async function processQuery(query) {
+        // Stop listening while processing
+        isProcessing = true;
+        try { recognition.stop(); } catch(e) {}
+
+        // If we're on idle, switch to chat
+        if (currentView === 'idle') switchView('chat');
+
+        setOrbState('thinking');
+        statusBadge.classList.remove('hidden');
+        statusText.textContent = 'THINKING';
+
+        // Show user message in chat
+        addChatMessage('user', query, false);
+
+        // Show thinking indicator
+        const thinkingMsg = addChatMessage('assistant', 'Accessing neural network...', true);
+
+        try {
+            const res = await fetch('/api/process', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: query })
+            });
+            const data = await res.json();
+
+            // Remove thinking message
+            thinkingMsg.remove();
+
+            if (data.status === 'success') {
+                // Add real response to chat
+                addChatMessage('assistant', data.answer.replace(/\n/g, '<br>'), false);
+
+                // If search data exists, also populate Research Hub
+                if (data.search_data && data.search_data.length > 0) {
+                    renderResearchResults(data.answer, data.search_data);
+                }
+
+                // Play TTS
+                setOrbState('speaking');
+                statusText.textContent = 'SPEAKING';
+                ttsAudio.src = `/api/audio?t=${Date.now()}`;
+                ttsAudio.play().catch(e => console.warn('Audio play blocked:', e));
+            } else {
+                addChatMessage('assistant', 'Error processing your request.', false);
+                setOrbState('idle');
+            }
+        } catch (err) {
+            thinkingMsg.remove();
+            addChatMessage('assistant', `Connection error: ${err.message}`, false);
+            setOrbState('idle');
+            statusBadge.classList.add('hidden');
+        }
+    }
+
+    // ── Audio Events ────────────────────────────────────────────────
+    function onAudioDone() {
+        setOrbState('idle');
+        statusBadge.classList.add('hidden');
+        // Resume always-listening after FRIDAY finishes speaking
+        isProcessing = false;
+        if (alwaysListenEnabled) {
+            setTimeout(() => {
+                try { recognition.start(); } catch(e) {}
+            }, 500);
+        }
+    }
+    ttsAudio.addEventListener('ended', onAudioDone);
+    ttsAudio.addEventListener('pause', onAudioDone);
+    ttsAudio.addEventListener('error', onAudioDone);
+
+    // ── Initial welcome message ─────────────────────────────────────
+    addChatMessage('assistant', 'Hello Kapil Boss! Systems online and all neural networks are synced. I\'m always listening — just speak or type your command.', false);
+    </script>
+</body>
+</html>
