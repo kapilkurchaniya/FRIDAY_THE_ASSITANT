@@ -1,6 +1,19 @@
-from AppOpener import close, open as appopen
+try:
+    from AppOpener import close, open as appopen
+except ImportError:
+    appopen = None; close = None
+
+try:
+    import keyboard
+except ImportError:
+    keyboard = None
+
+try:
+    from pywhatkit import search, playonyt
+except ImportError:
+    search = None; playonyt = None
+
 from webbrowser import open as webopen
-from pywhatkit import search,playonyt
 from dotenv import dotenv_values
 from bs4 import BeautifulSoup
 from rich import print
@@ -8,7 +21,6 @@ from groq import Groq
 import webbrowser
 import subprocess
 import requests
-import keyboard
 import asyncio
 import os
 
@@ -50,20 +62,39 @@ def Content(Topic):
     def ContentWriterAI(Prompt):
         messages.append({"role":"user","content":f"{Prompt}"})
 
-        completion = client.chat.completions.create(
-            model='llama-3.3-70b-versatile',
-            messages=SystemChatbot + messages,
-            max_tokens=2048,
-            temperature=0.1,
-            top_p=1,
-            stream=True,
-            stop=None
-        )
-        Answer = ""
+        models = [
+            "llama-3.1-70b-versatile",
+            "llama-3.1-8b-instant",
+            "llama3-70b-8192",
+            "llama3-8b-8192",
+            "mixtral-8x7b-32768",
+        ]
 
-        for chunk in completion:
-            if chunk.choices[0].delta.content:
-                Answer += chunk.choices[0].delta.content
+        Answer = ""
+        for model in models:
+            try:
+                completion = client.chat.completions.create(
+                    model=model,
+                    messages=SystemChatbot + messages,
+                    max_tokens=2048,
+                    temperature=0.1,
+                    top_p=1,
+                    stream=True,
+                    stop=None
+                )
+                
+                for chunk in completion:
+                    if chunk.choices[0].delta.content:
+                        Answer += chunk.choices[0].delta.content
+                
+                break
+            except Exception as e:
+                print(f"Model {model} failed with error: {e}. Trying next model...")
+                Answer = ""
+                continue
+        
+        if not Answer:
+            return "All models failed to generate a response."
         
         Answer = Answer.strip().replace("</s>","")
 
@@ -91,11 +122,16 @@ def YoutubeSearch(query):
 # YoutubeSearch("Desi gamers junction")
 
 def PlayYoutube(Query):
+    if playonyt is None:
+        print("playonyt not available")
+        return False
     playonyt(Query)
     return True
 
 def OpenApp(app, sess=requests.session()):
     try:
+        if appopen is None:
+            raise Exception("appopen not available")
         appopen(app, match_closest=True,output=True,throw_error=True)
         return True
     except:
@@ -139,6 +175,8 @@ def closeApps(app):
         pass
     else:
         try:
+            if close is None:
+                raise Exception("close not available")
             close(app,match_closest=True,output=True,throw_error=True)
             return True
         except:
@@ -147,16 +185,16 @@ def closeApps(app):
 def System(command):
 
     def mute():
-        keyboard.press_and_release('volume mute')
+        if keyboard: keyboard.press_and_release('volume mute')
     
     def unmute():
-        keyboard.press_and_release('volume mute')
+        if keyboard: keyboard.press_and_release('volume mute')
     
     def VolumeUp():
-        keyboard.press_and_release('volume up')
+        if keyboard: keyboard.press_and_release('volume up')
     
     def VolumeDown():
-        keyboard.press_and_release('volume down')
+        if keyboard: keyboard.press_and_release('volume down')
     
     if command == 'mute':
         mute()

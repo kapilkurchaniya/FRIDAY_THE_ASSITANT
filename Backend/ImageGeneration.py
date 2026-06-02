@@ -28,8 +28,18 @@ API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffus
 headers = {"Authorization": f"Bearer {get_key('.env','HuggingFaceAPIKey')}"}
 
 async def query(payload):
-    response = await asyncio.to_thread(requests.post,API_URL,headers=headers,json=payload)
-    return response.content
+    try:
+        response = await asyncio.to_thread(requests.post,API_URL,headers=headers,json=payload)
+        response.raise_for_status() # Raise exception for HTTP errors
+        return response.content
+    except Exception as e:
+        print(f"Hugging Face API failed: {e}. Falling back to Pollinations.ai...")
+        prompt_text = payload.get("inputs", "")
+        # The prompt from GenerateImages has some seed parameters added, we can send it directly
+        encoded_prompt = requests.utils.quote(prompt_text)
+        fallback_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1024&height=1024&nologo=true"
+        response = await asyncio.to_thread(requests.get, fallback_url)
+        return response.content
 
 async def generate_images(prompt: str):
     tasks= []

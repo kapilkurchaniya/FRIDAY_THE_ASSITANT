@@ -1,4 +1,8 @@
-import pygame
+try:
+    import pygame
+except ImportError:
+    pygame = None
+
 import random
 import asyncio
 import edge_tts
@@ -19,9 +23,13 @@ async def TextToAudioFile(text) -> None:
     await communicate.save(r"Data\\speech.mp3")
 
 def TTS(Text, func=lambda r=None: True):
-    while True:
+    retries = 0
+    while retries < 3:
         try:
             asyncio.run(TextToAudioFile(Text))
+
+            if pygame is None:
+                return True
 
             pygame.mixer.init()
 
@@ -37,6 +45,7 @@ def TTS(Text, func=lambda r=None: True):
         
         except Exception as e:
             print(f'Errors in TTS: {e}')
+            retries += 1
         
         finally:
             try:
@@ -44,7 +53,9 @@ def TTS(Text, func=lambda r=None: True):
                 pygame.mixer.music.stop()
                 pygame.mixer.quit()
             except Exception as e:
-                print(f"Error in finally block: {e}")
+                pass
+                
+    return False
 
 def TextToSpeech(Text, func=lambda r=None :True):
     Data = str(Text).split(".")

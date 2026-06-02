@@ -1,12 +1,15 @@
 import cohere
+from groq import Groq
 from rich import print
 from dotenv import dotenv_values
 
 env_vars = dotenv_values(".env")
 
 CohereAPIKey = env_vars.get("CohereAPIKey")
+GroqAPIKey = env_vars.get("GroqAPIKey")
 
 co = cohere.Client(api_key=CohereAPIKey)
+groq_client = Groq(api_key=GroqAPIKey)
 
 funcs = [
     'exit', 'general', 'realtime', 'open', 'close', 'play',
@@ -54,20 +57,47 @@ ChatHistory = [
 def FirstLayerDMM(prompt: str = "test"):
     messages.append({"role":"User","Content":f"{prompt}"})
 
-    stream = co.chat_stream(
-        model = 'command-a-03-2025',
-        message=prompt,
-        temperature=0.7,
-        chat_history=ChatHistory,
-        prompt_truncation='OFF',
-        connectors=[],
-        preamble=preamble,
-    )
-
     response = ""
-    for event in stream:
-        if event.event_type == 'text-generation':
-            response += event.text
+    try:
+        stream = co.chat_stream(
+            model = 'command-a-03-2025',
+            message=prompt,
+            temperature=0.7,
+            chat_history=ChatHistory,
+            prompt_truncation='OFF',
+            connectors=[],
+            preamble=preamble,
+        )
+
+        for event in stream:
+            if event.event_type == 'text-generation':
+                response += event.text
+    except Exception as e:
+        print(f"Cohere API failed: {e}. Falling back to Groq...")
+        
+        groq_messages = [{"role": "system", "content": preamble}]
+        for msg in ChatHistory:
+            groq_messages.append({
+                "role": "user" if msg["role"] == "User" else "assistant",
+                "content": msg["message"]
+            })
+        groq_messages.append({"role": "user", "content": prompt})
+        
+        try:
+            completion = groq_client.chat.completions.create(
+                model="llama-3.1-70b-versatile",
+                messages=groq_messages,
+                temperature=0.7,
+                max_tokens=1024,
+                stream=True,
+                stop=None
+            )
+            for chunk in completion:
+                if chunk.choices[0].delta.content:
+                    response += chunk.choices[0].delta.content
+        except Exception as groq_error:
+            print(f"Groq fallback also failed: {groq_error}")
+            return [f"general {prompt}"]
         
     response = response.replace('\n',"")
     response = response.split(",")
@@ -83,10 +113,17 @@ def FirstLayerDMM(prompt: str = "test"):
     
     response = temp
 
-    if "(query)" in response:
-        newresponse = FirstLayerDMM(prompt=prompt)
-        return newresponse
+    fallback = False
+    for item in response:
+        if "(query)" in item:
+            fallback = True
+            break
+            
+    if fallback:
+        return [f"general {prompt}"]
     else:
+        if not response:
+            return [f"general {prompt}"]
         return response
     
 # if __name__ == "__main__":

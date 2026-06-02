@@ -1,4 +1,4 @@
-from googlesearch import search
+from tavily import TavilyClient
 from groq import Groq
 from json import load, dump
 import datetime
@@ -10,8 +10,10 @@ env_vars = dotenv_values('.env')
 Username = env_vars.get("Username")
 Assistantname = env_vars.get("Assistantname")
 GroqAPIKey = env_vars.get("GroqAPIKey")
+TavilyAPIKey = env_vars.get("TAVILY_API_KEY")
 
 client = Groq(api_key=GroqAPIKey)
+tavily_client = TavilyClient(api_key=TavilyAPIKey)
 messages = []
 
 System = f"""Hello, I am {Username}, You are a very accurate and advanced AI chatbot named {Assistantname} which has real-time up-to-date information from the internet.
@@ -26,14 +28,41 @@ except FileNotFoundError:
         dump([],f)
 
 def GoogleSearch(Query):
-    results = list(search(Query,advanced=True,num_results=5))
-    Answer = f"The search results for {Query} are\n [start] \n"
+    try:
+        response = tavily_client.search(query=Query, max_results=3, include_images=True)
+        results = response.get("results", [])
+        images = response.get("images", [])
+        Answer = f"The search results for {Query} are\n [start] \n"
 
-    for i in results:
-        Answer += f"Title: {i.title}\nDescription: {i.description}\n\n"
-    
-    Answer += "[end]"
-    return Answer
+        for i in results:
+            title = i.get('title', 'No Title')
+            content = i.get('content', 'No Description')
+            Answer += f"Title: {title}\nDescription: {content}\n\n"
+        
+        Answer += "[end]"
+        return Answer, results, images
+    except Exception as e:
+        print(f"Tavily search failed: {e}. Falling back to googlesearch...")
+        try:
+            from googlesearch import search
+            results = []
+            # advanced=True returns SearchResult objects with title, description, url
+            for j in search(Query, num_results=3, advanced=True):
+                results.append({
+                    'title': j.title,
+                    'content': j.description,
+                    'url': j.url
+                })
+            
+            Answer = f"The search results for {Query} are\n [start] \n"
+            for i in results:
+                title = i.get('title', 'No Title')
+                content = i.get('content', 'No Description')
+                Answer += f"Title: {title}\nDescription: {content}\n\n"
+            Answer += "[end]"
+            return Answer, results, []
+        except Exception as fallback_e:
+            return f"The search results for {Query} are\n [start] \nError during search: {e}\nFallback error: {fallback_e}\n[end]", [], []
 
 def AnswerModifier(Answer):
     lines = Answer.split('\n')
@@ -69,22 +98,43 @@ def RealtimeSearchEngine(prompt):
         messages = load(f)
         
     messages.append({"role":"user","content":f"{prompt}"})
-    SystemChatBot.append({"role":"system","content": f"{GoogleSearch(prompt)}" })
+    
+    search_string, raw_results, images = GoogleSearch(prompt)
+    SystemChatBot.append({"role":"system","content": f"{search_string}" })
 
-    completion = client.chat.completions.create(
-        model='llama-3.3-70b-versatile',
-        messages=SystemChatBot + [{"role":"system","content":Information()}] + messages,
-        max_tokens=2048,
-        temperature=0.1,
-        top_p=1,
-        stream=True,
-        stop=None
-        )
+    models = [
+        "llama-3.1-70b-versatile",
+        "llama-3.1-8b-instant",
+        "llama3-70b-8192",
+        "llama3-8b-8192",
+        "mixtral-8x7b-32768",
+    ]
+
     Answer = ""
-
-    for chunk in completion:
-        if chunk.choices[0].delta.content:
-            Answer += chunk.choices[0].delta.content
+    for model in models:
+        try:
+            completion = client.chat.completions.create(
+                model=model,
+                messages=SystemChatBot + [{"role":"system","content":Information()}] + messages,
+                max_tokens=2048,
+                temperature=0.1,
+                top_p=1,
+                stream=True,
+                stop=None
+                )
+            
+            for chunk in completion:
+                if chunk.choices[0].delta.content:
+                    Answer += chunk.choices[0].delta.content
+            
+            break
+        except Exception as e:
+            print(f"Model {model} failed with error: {e}. Trying next model...")
+            Answer = ""
+            continue
+    
+    if not Answer:
+        return "All models failed to generate a response.", raw_results
         
     Answer = Answer.strip().replace("</s>","")
 
@@ -93,9 +143,11 @@ def RealtimeSearchEngine(prompt):
     with open('Data\\ChatLog.json','w') as f:
         dump(messages, f, indent=4)
     SystemChatBot.pop()
-    return AnswerModifier(Answer=Answer)
-
-# if __name__ == '__main__':
-#     while True:
-#         prompt = input(">>> ")
-#         print(RealtimeSearchEngine(prompt=prompt))
+    
+    # Combine results and images for frontend convenience
+    # Some results may not have images, we can attach images to results if available
+    for i, res in enumerate(raw_results):
+        if i < len(images):
+            res['image_url'] = images[i]
+            
+    return AnswerModifier(Answer=Answer), raw_results
