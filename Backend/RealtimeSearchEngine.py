@@ -102,8 +102,16 @@ def RealtimeSearchEngine(prompt):
     search_string, raw_results, images = GoogleSearch(prompt)
     SystemChatBot.append({"role":"system","content": f"{search_string}" })
 
+    # Retrieve context from Memory Pipeline
+    from Backend.Memory.Retriever import retrieve_context
+    memory_context = retrieve_context(prompt)
+    
+    system_messages = SystemChatBot
+    if memory_context:
+        system_messages = SystemChatBot + [{"role":"system","content": f"Use the following memories about the user to personalize your response:\n{memory_context}"}]
+
     models = [
-        "llama-3.1-70b-versatile",
+        "llama-3.3-70b-versatile",
         "llama-3.1-8b-instant",
         "llama3-70b-8192",
         "llama3-8b-8192",
@@ -113,18 +121,19 @@ def RealtimeSearchEngine(prompt):
     Answer = ""
     for model in models:
         try:
+            valid_messages = [msg for msg in messages if msg.get("content") and str(msg.get("content")).strip()]
             completion = client.chat.completions.create(
                 model=model,
-                messages=SystemChatBot + [{"role":"system","content":Information()}] + messages,
+                messages=system_messages + [{"role":"system","content":Information()}] + valid_messages,
+                temperature=0.7,
                 max_tokens=2048,
-                temperature=0.1,
                 top_p=1,
                 stream=True,
                 stop=None
-                )
+            )
             
             for chunk in completion:
-                if chunk.choices[0].delta.content:
+                if chunk.choices and chunk.choices[0].delta and chunk.choices[0].delta.content:
                     Answer += chunk.choices[0].delta.content
             
             break
@@ -137,13 +146,16 @@ def RealtimeSearchEngine(prompt):
         return "All models failed to generate a response.", raw_results
         
     Answer = Answer.strip().replace("</s>","")
-
     messages.append({"role":"assistant","content":Answer})
-
-    with open('Data\\ChatLog.json','w') as f:
-        dump(messages, f, indent=4)
-    SystemChatBot.pop()
     
+    with open(r"Data\ChatLog.json",'w') as f:
+        dump(messages, f, indent=4)
+        
+    # Spawn background thread to extract new memories
+    import threading
+    from Backend.Memory.Extractor import extract_memory
+    threading.Thread(target=extract_memory, args=(prompt, Answer), daemon=True).start()
+
     # Combine results and images for frontend convenience
     # Some results may not have images, we can attach images to results if available
     for i, res in enumerate(raw_results):

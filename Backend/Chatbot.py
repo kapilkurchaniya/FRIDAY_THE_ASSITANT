@@ -59,8 +59,16 @@ def ChatBot(Query):
         
         messages.append({"role":"user","content":f"{Query}"})
 
+        # Retrieve context from Memory Pipeline
+        from Backend.Memory.Retriever import retrieve_context
+        memory_context = retrieve_context(Query)
+        
+        system_messages = SystemChatbot + [{"role":"system","content":RealtimeInformation()}]
+        if memory_context:
+            system_messages.append({"role":"system","content": f"Use the following memories about the user to personalize your response:\n{memory_context}"})
+
         models = [
-            "llama-3.1-70b-versatile",
+            "llama-3.3-70b-versatile",
             "llama-3.1-8b-instant",
             "llama3-70b-8192",
             "llama3-8b-8192",
@@ -69,10 +77,11 @@ def ChatBot(Query):
 
         Answer = ""
         for model in models:
+            valid_messages = [msg for msg in messages if msg.get("content") and str(msg.get("content")).strip()]
             try:
                 completion = client.chat.completions.create(
                     model=model,
-                    messages=SystemChatbot + [{"role":"system","content":RealtimeInformation()}] + messages,
+                    messages=system_messages + valid_messages,
                     max_tokens=1024,
                     temperature=0.1,
                     top_p=1,
@@ -81,7 +90,7 @@ def ChatBot(Query):
                 )
         
                 for chunk in completion:
-                    if chunk.choices[0].delta.content:
+                    if chunk.choices and chunk.choices[0].delta and chunk.choices[0].delta.content:
                         Answer += chunk.choices[0].delta.content
                 
                 break
@@ -99,6 +108,11 @@ def ChatBot(Query):
 
         with open('Data\\ChatLog.json','w') as f:
             dump(messages, f, indent=4)
+            
+        # Spawn background thread to extract new memories
+        import threading
+        from Backend.Memory.Extractor import extract_memory
+        threading.Thread(target=extract_memory, args=(Query, Answer), daemon=True).start()
 
         return AnswerModifier(Answer=Answer)
 

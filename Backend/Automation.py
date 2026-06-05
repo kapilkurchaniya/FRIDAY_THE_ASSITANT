@@ -61,9 +61,17 @@ def Content(Topic):
     
     def ContentWriterAI(Prompt):
         messages.append({"role":"user","content":f"{Prompt}"})
+        
+        # Retrieve context from Memory Pipeline
+        from Backend.Memory.Retriever import retrieve_context
+        memory_context = retrieve_context(Prompt)
+        
+        system_messages = SystemChatbot
+        if memory_context:
+            system_messages = SystemChatbot + [{"role":"system","content": f"Use the following memories about the user to personalize your response:\n{memory_context}"}]
 
         models = [
-            "llama-3.1-70b-versatile",
+            "llama-3.3-70b-versatile",
             "llama-3.1-8b-instant",
             "llama3-70b-8192",
             "llama3-8b-8192",
@@ -72,10 +80,11 @@ def Content(Topic):
 
         Answer = ""
         for model in models:
+            valid_messages = [msg for msg in messages if msg.get("content") and str(msg.get("content")).strip()]
             try:
                 completion = client.chat.completions.create(
                     model=model,
-                    messages=SystemChatbot + messages,
+                    messages=system_messages + valid_messages,
                     max_tokens=2048,
                     temperature=0.1,
                     top_p=1,
@@ -84,7 +93,7 @@ def Content(Topic):
                 )
                 
                 for chunk in completion:
-                    if chunk.choices[0].delta.content:
+                    if chunk.choices and chunk.choices[0].delta and chunk.choices[0].delta.content:
                         Answer += chunk.choices[0].delta.content
                 
                 break
