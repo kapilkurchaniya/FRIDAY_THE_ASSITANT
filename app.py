@@ -117,4 +117,10 @@ def get_audio():
         return jsonify({"error": "Audio file not found"}), 404
 
 if __name__ == '__main__':
+    try:
+        from Backend.Memory.Reflection import start_reflection_job
+        start_reflection_job()
+    except Exception as e:
+        print(f"Could not start reflection job: {e}")
+        
     app.run(host='0.0.0.0', port=5000, debug=True)
