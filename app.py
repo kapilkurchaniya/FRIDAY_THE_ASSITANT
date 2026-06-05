@@ -14,10 +14,10 @@ from Backend.Automation import Automation
 from Backend.Chatbot import ChatBot
 from Backend.TextToSpeech import TextToAudioFile
 
-app = Flask(__name__, template_folder='Frontend/templates', static_folder='Frontend')
+ app = Flask(__name__, template_folder='Frontend/templates', static_folder='Frontend')
 CORS(app)
 
-env_vars = dotenv_values('.env')
+ env_vars = dotenv_values('.env')
 Username = env_vars.get('Username', 'User')
 Assistantname = env_vars.get('Assistantname', 'Friday')
 
