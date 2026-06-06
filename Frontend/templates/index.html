@@ -381,7 +381,7 @@
     // ── Speech Recognition ──────────────────────────────────────────
     let recognition = null;
     let isProcessing = false;
-    let alwaysListenEnabled = true;
+    let alwaysListenEnabled = false;
     let speechTimeout = null;
     let finalTranscript = '';
 
@@ -441,9 +441,15 @@
         };
 
         recognition.onerror = (e) => {
-            console.error('Speech recognition error:', e.error);
             if (e.error === 'no-speech' || e.error === 'aborted') {
                 return; // Will auto-restart via onend
+            }
+            if (e.error === 'network') {
+                alwaysListenEnabled = false;
+                isProcessing = false;
+                console.warn('Speech recognition is unavailable right now. Type commands or click the mic to retry.');
+            } else {
+                console.error('Speech recognition error:', e.error);
             }
             setOrbState('idle');
             statusBadge.classList.add('hidden');
@@ -458,9 +464,6 @@
             alert('Speech recognition not supported in this browser. Use Chrome or Edge.');
         }
     }
-
-    // Auto-start listening on page load
-    setTimeout(() => startListening(), 1000);
 
     // Voice buttons (also act as toggle)
     $('#voice-btn-idle').addEventListener('click', startListening);
@@ -581,7 +584,9 @@
     async function processQuery(query) {
         // Stop listening while processing
         isProcessing = true;
-        try { recognition.stop(); } catch(e) {}
+        if (recognition) {
+            try { recognition.stop(); } catch(e) {}
+        }
 
         // If we're on idle, switch to chat
         if (currentView === 'idle') switchView('chat');
@@ -602,34 +607,47 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ query: query })
             });
-            const data = await res.json();
+            const contentType = res.headers.get('content-type') || '';
+            let data = null;
+            if (contentType.includes('application/json')) {
+                data = await res.json();
+            } else {
+                const text = await res.text();
+                throw new Error(text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim() || `Server returned ${res.status}`);
+            }
+            if (!res.ok || data.status !== 'success') {
+                throw new Error(data.error || `Server returned ${res.status}`);
+            }
 
             // Remove thinking message
             thinkingMsg.remove();
 
-            if (data.status === 'success') {
-                // Add real response to chat
-                addChatMessage('assistant', data.answer.replace(/\n/g, '<br>'), false);
+            // Add real response to chat
+            addChatMessage('assistant', data.answer.replace(/\n/g, '<br>'), false);
 
-                // If search data exists, also populate Research Hub
-                if (data.search_data && data.search_data.length > 0) {
-                    renderResearchResults(data.answer, data.search_data);
-                }
+            // If search data exists, also populate Research Hub
+            if (data.search_data && data.search_data.length > 0) {
+                renderResearchResults(data.answer, data.search_data);
+            }
 
-                // Play TTS
+            // Play TTS only when the backend created an audio file.
+            if (data.audio_available) {
                 setOrbState('speaking');
                 statusText.textContent = 'SPEAKING';
                 ttsAudio.src = `/api/audio?t=${Date.now()}`;
-                ttsAudio.play().catch(e => console.warn('Audio play blocked:', e));
+                ttsAudio.play().catch(e => {
+                    console.warn('Audio play blocked:', e);
+                    onAudioDone();
+                });
             } else {
-                addChatMessage('assistant', 'Error processing your request.', false);
-                setOrbState('idle');
+                onAudioDone();
             }
         } catch (err) {
             thinkingMsg.remove();
             addChatMessage('assistant', `Connection error: ${err.message}`, false);
             setOrbState('idle');
             statusBadge.classList.add('hidden');
+            isProcessing = false;
         }
     }
 
@@ -639,7 +657,7 @@
         statusBadge.classList.add('hidden');
         // Resume always-listening after FRIDAY finishes speaking
         isProcessing = false;
-        if (alwaysListenEnabled) {
+        if (recognition && alwaysListenEnabled) {
             setTimeout(() => {
                 try { recognition.start(); } catch(e) {}
             }, 500);
@@ -650,7 +668,7 @@
     ttsAudio.addEventListener('error', onAudioDone);
 
     // ── Initial welcome message ─────────────────────────────────────
-    addChatMessage('assistant', 'Hello Kapil Boss! Systems online and all neural networks are synced. I\'m always listening — just speak or type your command.', false);
+    addChatMessage('assistant', 'Hello Kapil Boss! Systems online and all neural networks are synced. Type a command, or click the mic when you want voice input.', false);
     </script>
 </body>
 </html>

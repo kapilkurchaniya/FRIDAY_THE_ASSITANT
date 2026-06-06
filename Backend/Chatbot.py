@@ -59,9 +59,14 @@ def ChatBot(Query):
         
         messages.append({"role":"user","content":f"{Query}"})
 
-        # Retrieve context from Memory Pipeline
-        from Backend.Memory.Retriever import retrieve_context
-        memory_context = retrieve_context(Query)
+        # Retrieve context from Memory
+        try:
+            from Backend.Memory.Retriever import retrieve_context
+            memory_context = retrieve_context(Query)
+            if memory_context:
+                print(f"[INFO] ChatBot: Retrieved memory context.")
+        except Exception as e:
+            print(f"[WARNING] ChatBot Memory retrieval skipped: {e}")
         
         system_messages = SystemChatbot + [{"role":"system","content":RealtimeInformation()}]
         if memory_context:
@@ -95,12 +100,32 @@ def ChatBot(Query):
                 
                 break
             except Exception as e:
-                print(f"Model {model} failed with error: {e}. Trying next model...")
+                print(f"[WARNING] ChatBot Model {model} failed with error: {e}. Trying next model...")
                 Answer = ""
                 continue
         
         if not Answer:
-            return "All models failed to generate a response."
+            print("[WARNING] All Groq models failed. Attempting HuggingFace fallback...")
+            try:
+                import requests
+                hf_api_key = env_vars.get("HuggingFaceAPIKey", "").strip()
+                if hf_api_key:
+                    hf_url = "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct"
+                    headers = {"Authorization": f"Bearer {hf_api_key}"}
+                    hf_payload = {"inputs": f"User: {Query}\nAssistant:", "parameters": {"max_new_tokens": 512, "temperature": 0.5}}
+                    res = requests.post(hf_url, headers=headers, json=hf_payload, timeout=15)
+                    if res.status_code == 200:
+                        out = res.json()
+                        if isinstance(out, list) and len(out) > 0 and 'generated_text' in out[0]:
+                            Answer = out[0]['generated_text'].split("Assistant:")[-1].strip()
+                            print("[INFO] HuggingFace fallback succeeded.")
+                    else:
+                        print(f"[ERROR] HuggingFace API returned {res.status_code}: {res.text}")
+            except Exception as hf_err:
+                print(f"[ERROR] HuggingFace fallback failed: {hf_err}")
+
+        if not Answer:
+            return "I'm having trouble connecting to my AI models right now. Please check the internet connection."
         
         Answer = Answer.replace("</s>","")
 

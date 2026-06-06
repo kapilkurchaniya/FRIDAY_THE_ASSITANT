@@ -59,6 +59,7 @@ def FirstLayerDMM(prompt: str = "test"):
 
     response = ""
     try:
+        print(f"[INFO] FirstLayerDMM: Attempting Cohere API (model: command-a-03-2025)...")
         stream = co.chat_stream(
             model = 'command-a-03-2025',
             message=prompt,
@@ -72,8 +73,9 @@ def FirstLayerDMM(prompt: str = "test"):
         for event in stream:
             if event.event_type == 'text-generation':
                 response += event.text
+        print("[INFO] FirstLayerDMM: Cohere API succeeded.")
     except Exception as e:
-        print(f"Cohere API failed: {e}. Falling back to Groq...")
+        print(f"[WARNING] Cohere API failed: {e}. Falling back to Groq...")
         
         groq_messages = [{"role": "system", "content": preamble}]
         for msg in ChatHistory:
@@ -84,6 +86,7 @@ def FirstLayerDMM(prompt: str = "test"):
         groq_messages.append({"role": "user", "content": prompt})
         
         try:
+            print("[INFO] FirstLayerDMM: Attempting Groq API (model: llama-3.1-70b-versatile)...")
             completion = groq_client.chat.completions.create(
                 model="llama-3.1-70b-versatile",
                 messages=groq_messages,
@@ -95,8 +98,9 @@ def FirstLayerDMM(prompt: str = "test"):
             for chunk in completion:
                 if chunk.choices[0].delta.content:
                     response += chunk.choices[0].delta.content
+            print("[INFO] FirstLayerDMM: Groq API succeeded.")
         except Exception as groq_error:
-            print(f"Groq fallback also failed: {groq_error}")
+            print(f"[ERROR] Groq fallback also failed: {groq_error}")
             return [f"general {prompt}"]
         
     response = response.replace('\n',"")

@@ -21,7 +21,7 @@ def retrieve_context(query: str, n_results: int = 5) -> str:
                     for fact in facts:
                         context += f"- {fact}\n"
         except Exception as e:
-            print(f"ChromaDB retrieval error: {e}")
+            print(f"[WARNING] Retriever: ChromaDB retrieval error: {e}")
             
     # 2. Keyword Search in Knowledge Graph and Decisions (MongoDB)
     # A simple but effective way to trigger graph recall based on query words
@@ -42,7 +42,7 @@ def retrieve_context(query: str, n_results: int = 5) -> str:
                 for t in triples:
                     context += f"- {t.get('subject')} -> {t.get('predicate')} -> {t.get('object')}\n"
         except Exception as e:
-            print(f"MongoDB KG retrieval error: {e}")
+            print(f"[WARNING] Retriever: MongoDB KG retrieval error: {e}")
             
     if decisions is not None and words:
         try:
@@ -53,6 +53,6 @@ def retrieve_context(query: str, n_results: int = 5) -> str:
                 for d in decs:
                     context += f"- {d.get('decision')}\n"
         except Exception as e:
-            print(f"MongoDB Decisions retrieval error: {e}")
+            print(f"[WARNING] Retriever: MongoDB Decisions retrieval error: {e}")
             
     return context.strip()

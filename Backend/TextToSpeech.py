@@ -19,8 +19,20 @@ async def TextToAudioFile(text) -> None:
     if os.path.exists(file_path):
         os.remove(file_path)
 
-    communicate = edge_tts.Communicate(text,AssistantVoice,pitch='+5Hz',rate='+13%')
-    await communicate.save(r"Data\\speech.mp3")
+    try:
+        print("[INFO] TextToSpeech: Attempting edge-tts...")
+        communicate = edge_tts.Communicate(text, AssistantVoice, pitch='+5Hz', rate='+13%')
+        await communicate.save(file_path)
+        print("[INFO] TextToSpeech: edge-tts succeeded.")
+    except Exception as e:
+        print(f"[WARNING] edge-tts failed: {e}. Falling back to gTTS...")
+        try:
+            from gtts import gTTS
+            tts = gTTS(text=text, lang='en')
+            tts.save(file_path)
+            print("[INFO] TextToSpeech: gTTS fallback succeeded.")
+        except Exception as gtts_err:
+            print(f"[ERROR] gTTS fallback also failed: {gtts_err}")
 
 def TTS(Text, func=lambda r=None: True):
     retries = 0

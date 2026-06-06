@@ -6,8 +6,8 @@ from dotenv import dotenv_values
 from Backend.Memory.DB import memories_collection, knowledge_graph, decisions
 
 env_vars = dotenv_values('.env')
-GroqAPIKey = env_vars.get("GroqAPIKey")
-client = Groq(api_key=GroqAPIKey) if GroqAPIKey else None
+GroqAPIKey = (env_vars.get("GroqAPIKey") or "").strip()
+client = Groq(api_key=GroqAPIKey, timeout=20, max_retries=0) if GroqAPIKey else None
 
 def extract_memory(user_msg: str, assistant_reply: str):
     """

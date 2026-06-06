@@ -11,3 +11,4 @@ edge-tts
 tavily-python
 flask
 flask-cors
+gTTS
