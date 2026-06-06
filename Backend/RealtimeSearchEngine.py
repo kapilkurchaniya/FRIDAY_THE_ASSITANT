@@ -28,7 +28,10 @@ except FileNotFoundError:
         dump([],f)
 
 def GoogleSearch(Query):
+    if len(Query) < 2:
+        return f"The search results for {Query} are\n [start] \nQuery too short for search.\n[end]", [], []
     try:
+        print(f"[INFO] GoogleSearch: Querying Tavily for '{Query}'...")
         response = tavily_client.search(query=Query, max_results=3, include_images=True)
         results = response.get("results", [])
         images = response.get("images", [])
@@ -42,7 +45,7 @@ def GoogleSearch(Query):
         Answer += "[end]"
         return Answer, results, images
     except Exception as e:
-        print(f"Tavily search failed: {e}. Falling back to googlesearch...")
+        print(f"[WARNING] Tavily search failed: {e}. Falling back to googlesearch-python...")
         try:
             from googlesearch import search
             results = []
@@ -102,10 +105,16 @@ def RealtimeSearchEngine(prompt):
     search_string, raw_results, images = GoogleSearch(prompt)
     SystemChatBot.append({"role":"system","content": f"{search_string}" })
 
-    # Retrieve context from Memory Pipeline
-    from Backend.Memory.Retriever import retrieve_context
-    memory_context = retrieve_context(prompt)
-    
+    # Retrieve context from Memory    
+    try:
+        from Backend.Memory.Retriever import retrieve_context
+        memory_context = retrieve_context(prompt)
+        if memory_context:
+            print(f"[INFO] RealtimeSearchEngine: Retrieved memory context.")
+    except Exception as e:
+        print(f"[WARNING] RealtimeSearchEngine Memory retrieval skipped: {e}")
+        memory_context = None
+
     system_messages = SystemChatBot
     if memory_context:
         system_messages = SystemChatBot + [{"role":"system","content": f"Use the following memories about the user to personalize your response:\n{memory_context}"}]
@@ -138,12 +147,33 @@ def RealtimeSearchEngine(prompt):
             
             break
         except Exception as e:
-            print(f"Model {model} failed with error: {e}. Trying next model...")
+            print(f"[WARNING] RealtimeSearchEngine Model {model} failed with error: {e}. Trying next model...")
             Answer = ""
             continue
     
     if not Answer:
-        return "All models failed to generate a response.", raw_results
+        print("[WARNING] All Groq models failed. Attempting HuggingFace fallback...")
+        try:
+            import requests
+            hf_api_key = env_vars.get("HuggingFaceAPIKey", "").strip()
+            if hf_api_key:
+                hf_url = "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct"
+                headers = {"Authorization": f"Bearer {hf_api_key}"}
+                prompt_text = "System: " + "\n".join([m['content'] for m in system_messages]) + f"\nUser: {prompt}\nAssistant:"
+                hf_payload = {"inputs": prompt_text, "parameters": {"max_new_tokens": 512, "temperature": 0.5}}
+                res = requests.post(hf_url, headers=headers, json=hf_payload, timeout=15)
+                if res.status_code == 200:
+                    out = res.json()
+                    if isinstance(out, list) and len(out) > 0 and 'generated_text' in out[0]:
+                        Answer = out[0]['generated_text'].split("Assistant:")[-1].strip()
+                        print("[INFO] HuggingFace fallback succeeded.")
+                else:
+                    print(f"[ERROR] HuggingFace API returned {res.status_code}: {res.text}")
+        except Exception as hf_err:
+            print(f"[ERROR] HuggingFace fallback failed: {hf_err}")
+
+    if not Answer:
+        return "I'm having trouble connecting to my AI models right now.", raw_results
         
     Answer = Answer.strip().replace("</s>","")
     messages.append({"role":"assistant","content":Answer})

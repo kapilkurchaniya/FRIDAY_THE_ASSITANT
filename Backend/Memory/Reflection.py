@@ -5,8 +5,8 @@ from dotenv import dotenv_values
 from Backend.Memory.Extractor import extract_memory
 
 env_vars = dotenv_values('.env')
-GroqAPIKey = env_vars.get("GroqAPIKey")
-client = Groq(api_key=GroqAPIKey) if GroqAPIKey else None
+GroqAPIKey = (env_vars.get("GroqAPIKey") or "").strip()
+client = Groq(api_key=GroqAPIKey, timeout=20, max_retries=0) if GroqAPIKey else None
 
 def nightly_reflection():
     """

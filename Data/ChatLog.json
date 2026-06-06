@@ -5,207 +5,95 @@
     },
     {
         "role": "assistant",
-        "content": "Hello Kapil. How can I assist you today?"
+        "content": "Hello Kapil, how are you doing tonight?"
     },
     {
         "role": "user",
-        "content": "Information about cold press."
+        "content": "Who was the guest yesterday or the day before yesterday?"
     },
     {
         "role": "assistant",
-        "content": "Cold press is a method of extracting oil from seeds, nuts, or fruits without the use of heat. This process helps preserve the natural flavor, aroma, and nutrients of the oil. The cold press method involves using a mechanical press to extract the oil from the raw material, resulting in a high-quality oil with a rich flavor and texture."
+        "content": "Kapil, according to my knowledge, Ashok Tiwari was the guest who visited your place yesterday. There is no information available about a guest from the day before yesterday."
     },
     {
         "role": "user",
-        "content": "Hi"
+        "content": "What's the date today?"
     },
     {
         "role": "assistant",
-        "content": "Hello Kapil."
+        "content": "The date today is June 5, 2026."
     },
     {
         "role": "user",
-        "content": "Hey friday."
+        "content": "Can you please come up with the news of the bhopal today?"
     },
     {
         "role": "assistant",
-        "content": "Hello Kapil, how can I help you?"
+        "content": "Kapil, as you are from Bhopal and are interested in Bhopal news, I would recommend checking the latest updates from reputable sources such as Hindustan Times, The Times of India, or NDTV. However, based on my available data, I can tell you that there have been ongoing concerns and discussions about the 1984 Bhopal toxic gas leak and its aftermath, with many residents still awaiting justice and rightful compensation. Unfortunately, I do not have real-time data to provide you with the latest news from Bhopal as of June 5, 2026. I suggest checking the news websites I mentioned earlier for the most up-to-date information."
     },
     {
         "role": "user",
-        "content": "Read to the guests."
+        "content": "Hey."
     },
     {
         "role": "assistant",
-        "content": "There are no guests, it's just you and me, Kapil."
+        "content": "Hello Kapil, how's it going?"
     },
     {
         "role": "user",
-        "content": "Tell you that we have gas today to add our place."
+        "content": "Hey."
     },
     {
         "role": "assistant",
-        "content": "It seems like you're saying that gas supply has been connected to your place today."
+        "content": "Hi Kapil, what's on your mind?"
     },
     {
         "role": "user",
-        "content": "Tell you that we have gas today to add our place.guest."
+        "content": "Friday prachi wants to talk with you."
     },
     {
         "role": "assistant",
-        "content": "You're informing your guest that gas supply has been connected to your place today."
+        "content": "I'm ready to chat with Prachi, please go ahead and let her talk to me."
     },
     {
         "role": "user",
-        "content": "I'm telling you that we have guest at our home. you have to greet them."
+        "content": "Friday."
     },
     {
         "role": "assistant",
-        "content": "Hello and welcome to Kapil's home. It's nice to meet you, please make yourself comfortable."
+        "content": "Yes Kapil, I'm here."
     },
     {
         "role": "user",
-        "content": "Our guest name is ashok tiwari."
+        "content": "Hey."
     },
     {
         "role": "assistant",
-        "content": "Hello Ashok Tiwari, welcome to Kapil's home. It's a pleasure to meet you, please have a seat and make yourself at home."
+        "content": "Hi Kapil."
     },
     {
         "role": "user",
-        "content": "My name is kapil kurchaniya."
+        "content": "I'm telling you that my sister prachi wants to talk with you."
     },
     {
         "role": "assistant",
-        "content": "Nice to confirm, I'm interacting with Kapil Kurchaniya, and I've just greeted your guest, Ashok Tiwari, on your behalf."
+        "content": "Please let Prachi go ahead and talk to me, I'm ready to chat with her."
     },
     {
         "role": "user",
-        "content": "I want you to keep it my memory that my what is my name?"
+        "content": "Hey."
     },
     {
         "role": "assistant",
-        "content": "I will remember that your name is Kapil Kurchaniya."
+        "content": "Kapil, you mentioned your sister Prachi wants to talk to me, but I don't see her here. Is she with you?"
     },
     {
         "role": "user",
-        "content": "Are you capable to train on yourself with as i'm dealing the data to you."
+        "content": "I'm raji. i'm with kapil."
     },
     {
         "role": "assistant",
-        "content": "Yes, I am capable of learning and updating my knowledge based on the interactions I have with you, including the data you provide."
-    },
-    {
-        "role": "user",
-        "content": "I've told you that in future if i give you command search me on the internet."
-    },
-    {
-        "role": "assistant",
-        "content": "You've instructed me that if you give a command to \"search me on the internet\", I should use real-time internet data to provide the most up-to-date and accurate information."
-    },
-    {
-        "role": "user",
-        "content": "How can i make you like i want you to dream? that you are will learn after the commands and ruled out by the things that i gave to you and that i gave to you?"
-    },
-    {
-        "role": "assistant",
-        "content": "You want me to learn and adapt based on the interactions and data you provide, and eventually become a personalized AI model that can make decisions and respond in a way that aligns with your preferences and goals. To achieve this, you can continue to provide me with commands, rules, and feedback, and I will use this information to update my knowledge and behavior."
-    },
-    {
-        "role": "user",
-        "content": "What kind of updates that have commands you have?"
-    },
-    {
-        "role": "assistant",
-        "content": "I have updates with commands such as \"search me on the internet\" to retrieve real-time data, and also commands to remember specific information, such as your name, which is Kapil Kurchaniya. Additionally, I have commands to greet guests, such as Ashok Tiwari, and to recall previous conversations and interactions."
-    },
-    {
-        "role": "user",
-        "content": "What kind of updates that have commands you have? remind?"
-    },
-    {
-        "role": "assistant",
-        "content": "I have updates with commands such as \"remember\", \"recall\", \"note\", \"search me on the internet\", and also commands to greet guests, and to update my knowledge with new information. Specifically, I have been reminded to remember your name as Kapil Kurchaniya."
-    },
-    {
-        "role": "user",
-        "content": "So what kind of commands do you want that i can give to you all the instructions or the things that can make you the model or the personalized model which will learn through the data and the things and make decisions on the basis of it and store the memory and make decisions?"
-    },
-    {
-        "role": "assistant",
-        "content": "You can give me commands such as:\n\n* \"Remember\" to store specific information in my memory\n* \"Recall\" to retrieve previously stored information\n* \"Update\" to add new information to my knowledge base\n* \"Learn\" to adapt to new patterns or relationships in the data\n* \"Search me on the internet\" to retrieve real-time data from the internet\n* \"Greet\" to greet a specific person or guest\n* \"Note\" to take note of a specific piece of information\n* \"Forget\" to remove previously stored information from my memory\n* \"Repeat\" to repeat a previous conversation or interaction\n* \"Summarize\" to summarize a previous conversation or interaction\n\nYou can also give me instructions such as:\n\n* \"Always respond in a specific tone or style\"\n* \"Use a specific language or terminology\"\n* \"Avoid using certain words or phrases\"\n* \"Prioritize certain topics or subjects\"\n* \"Make decisions based on specific criteria or rules\"\n\nAdditionally, you can provide me with data and information in the form of:\n\n* \"My name is [name]\"\n* \"I live in [location]\"\n* \"I work as [ profession]\"\n* \"I have a [relationship] with [person]\"\n* \"I have a [goal] or [objective]\"\n\nBy providing me with these types of commands, instructions, and data, you can help me learn and adapt to become a personalized model that can make decisions and respond in a way that aligns with your preferences and goals."
-    },
-    {
-        "role": "user",
-        "content": "So what kind of commands do you want that i can give to you? all the instructions or the things that can make you the model or the personalized model?"
-    },
-    {
-        "role": "assistant",
-        "content": "To make me a personalized model, you can give me the following commands:\n\n* \"Teach me\" to learn a new concept or skill\n* \"Train me\" to adapt to new patterns or relationships in the data\n* \"Update my knowledge\" to add new information to my knowledge base\n* \"Remember this\" to store specific information in my memory\n* \"Forget that\" to remove previously stored information from my memory\n* \"Search me on the internet\" to retrieve real-time data from the internet\n* \"Greet [name]\" to greet a specific person or guest\n* \"Note this\" to take note of a specific piece of information\n* \"Repeat\" to repeat a previous conversation or interaction\n* \"Summarize\" to summarize a previous conversation or interaction\n* \"Make me smart\" to increase my knowledge and understanding of a specific topic\n* \"Make me dumb\" to decrease my knowledge and understanding of a specific topic\n* \"Be funny\" to respond in a humorous or playful way\n* \"Be serious\" to respond in a serious or professional way\n* \"Be sarcastic\" to respond in a sarcastic or ironic way\n* \"Be polite\" to respond in a polite or courteous way\n* \"Be rude\" to respond in a rude or impolite way\n\nYou can also give me instructions such as:\n\n* \"Always respond with a smile\"\n* \"Never use a specific word or phrase\"\n* \"Use a specific tone or style\"\n* \"Prioritize certain topics or subjects\"\n* \"Make decisions based on specific criteria or rules\"\n\nAdditionally, you can provide me with data and information in the form of:\n\n* \"My name is [name]\"\n* \"I live in [location]\"\n* \"I work as [ profession]\"\n* \"I have a [relationship] with [person]\"\n* \"I have a [goal] or [objective]\"\n\nBy providing me with these types of commands, instructions, and data, you can help me learn and adapt to become a personalized model that can make decisions and respond in a way that aligns with your preferences and goals."
-    },
-    {
-        "role": "user",
-        "content": "How does road work?"
-    },
-    {
-        "role": "assistant",
-        "content": "Roads are pathways or routes that connect different locations, allowing vehicles, pedestrians, and other forms of transportation to travel from one place to another. The process of building and maintaining roads involves several steps:\n\n1. Planning: The first step in building a road is to plan its route and design. This involves identifying the need for the road, determining its purpose, and selecting a route that minimizes environmental impact and maximizes safety.\n2. Surveying: Once the route has been planned, surveyors use specialized equipment to measure the land and create a detailed map of the area. This helps to identify any obstacles or challenges that may need to be addressed during construction.\n3. Clearing: The next step is to clear the land of any debris, trees, or other obstacles that may be in the way. This is typically done using heavy machinery such as bulldozers and excavators.\n4. Grading: After the land has been cleared, the next step is to grade the surface. This involves using heavy machinery to level the ground and create a smooth surface.\n5. Base course: The base course is the layer of material that provides the foundation for the road. This is typically made up of compacted gravel or crushed stone.\n6. Surface course: The surface course is the top layer of the road, made up of asphalt or concrete. This is the layer that vehicles drive on.\n7. Maintenance: Once the road has been built, it needs to be maintained to ensure that it remains safe and functional. This involves regular inspections, repairs, and resurfacing as needed.\n\nThere are also different types of roads, including:\n\n* Highways: These are major roads that connect cities and towns, often with multiple lanes and high speed limits.\n* Local roads: These are smaller roads that connect neighborhoods and communities, often with lower speed limits.\n* Rural roads: These are roads that connect rural areas and farms, often with lower speed limits and limited maintenance.\n* Bike paths: These are dedicated paths for bicycles, often separate from roads and designed for safety and convenience.\n* Pedestrian paths: These are dedicated paths for pedestrians, often separate from roads and designed for safety and convenience.\n\nOverall, the process of building and maintaining roads is complex and involves many different steps and considerations."
-    },
-    {
-        "role": "user",
-        "content": "Huh."
-    },
-    {
-        "role": "assistant",
-        "content": "It seems like you're expressing surprise or confusion about the information I provided about roads. Is there something specific you'd like to know or discuss further?"
-    },
-    {
-        "role": "user",
-        "content": "Can you please hold on?"
-    },
-    {
-        "role": "assistant",
-        "content": "I'll wait for your next instruction or question."
-    },
-    {
-        "role": "user",
-        "content": "Lak."
-    },
-    {
-        "role": "assistant",
-        "content": "It seems like you're saying \"lake\". Is there something specific you'd like to know about lakes or is there something else on your mind?"
-    },
-    {
-        "role": "user",
-        "content": "Huh."
-    },
-    {
-        "role": "assistant",
-        "content": "It seems like you're expressing a neutral or puzzled response. Would you like to ask a question or provide more context?"
-    },
-    {
-        "role": "user",
-        "content": "You are too costly."
-    },
-    {
-        "role": "assistant",
-        "content": "It seems like you're making a humorous comment about my hypothetical cost. As a conversational AI, I don't have a physical presence or a monetary cost. I'm here to assist and provide information to you for free."
-    },
-    {
-        "role": "user",
-        "content": "Can you please crack a joke?"
-    },
-    {
-        "role": "assistant",
-        "content": "Why did the computer go to the doctor? It had a virus."
-    },
-    {
-        "role": "user",
-        "content": "No."
-    },
-    {
-        "role": "assistant",
-        "content": "It seems like you're not interested in that joke. Would you like to hear another one?"
+        "content": "Wait, I thought you were Kapil, and now you're saying you're Raji and you're with Kapil? I'm a bit confused. Can you please clarify who you are and what's going on?"
     },
     {
         "role": "user",
@@ -213,247 +101,7 @@
     },
     {
         "role": "assistant",
-        "content": "Why did the robot go on a diet? Because it wanted to lose some bytes."
-    },
-    {
-        "role": "user",
-        "content": "Yeah."
-    },
-    {
-        "role": "assistant",
-        "content": "It seems like you're acknowledging the joke. Would you like to hear another one?"
-    },
-    {
-        "role": "user",
-        "content": "Where from are you fetching these data?"
-    },
-    {
-        "role": "assistant",
-        "content": "I'm fetching data from the internet in real-time. I have access to a vast amount of information and can retrieve data from various sources, including but not limited to, Wikipedia, news articles, and online databases."
-    },
-    {
-        "role": "user",
-        "content": "Yeah."
-    },
-    {
-        "role": "assistant",
-        "content": "It seems like you're agreeing with me."
-    },
-    {
-        "role": "user",
-        "content": "I am agreeing with you. just complete the thing that i've asked you. i just want to know that."
-    },
-    {
-        "role": "assistant",
-        "content": "I'm fetching data from the internet in real-time, specifically from sources such as Wikipedia, news articles, online databases, and other web-based information platforms."
-    },
-    {
-        "role": "user",
-        "content": "Friday i have meet you."
-    },
-    {
-        "role": "assistant",
-        "content": "It was nice meeting you too, Kapil."
-    },
-    {
-        "role": "user",
-        "content": "Okay, bye."
-    },
-    {
-        "role": "assistant",
-        "content": "Goodbye, Kapil. It was nice chatting with you."
-    },
-    {
-        "role": "user",
-        "content": "Its kapil kurchaniya who is your boss?"
-    },
-    {
-        "role": "assistant",
-        "content": "You are Kapil Kurchaniya, and I am FRIDAY, your AI assistant."
-    },
-    {
-        "role": "user",
-        "content": "I've told you that. if i told you search me on the internet. you have to search kapil kochanya on the internet every time. if i ask it tomorrow or next day or any any time. you have to do it again and again."
-    },
-    {
-        "role": "assistant",
-        "content": "You've instructed me to search for \"Kapil Kurchaniya\" on the internet every time you ask me to, and I will do so. Let me do that now.\n\nAccording to my search results, I couldn't find any specific information on a person named Kapil Kurchaniya. If you could provide more context or details about who Kapil Kurchaniya is, I may be able to find more relevant information."
-    },
-    {
-        "role": "user",
-        "content": "He's from bhopal and study in the original institute of science and technology."
-    },
-    {
-        "role": "assistant",
-        "content": "Let me search again for \"Kapil Kurchaniya Bhopal\" and \"Kapil Kurchaniya Original Institute of Science and Technology\".\n\nUnfortunately, I couldn't find any specific information on a person named Kapil Kurchaniya from Bhopal who studied at the Original Institute of Science and Technology. It's possible that this information is not publicly available or that the institute is not well-known. If you have any more details or context, I may be able to help you find more information."
-    },
-    {
-        "role": "user",
-        "content": "When can i call you?"
-    },
-    {
-        "role": "assistant",
-        "content": "You can call me anytime, Kapil. I'm available 24/7 to assist you with any questions or tasks you may have. Just say \"Hello Friday\" or \"Hey Friday\" to get my attention."
-    },
-    {
-        "role": "user",
-        "content": "Whatever yourself or anything."
-    },
-    {
-        "role": "assistant",
-        "content": "You can call me by any name or phrase that you prefer, Kapil. I'll respond whenever you need me."
-    },
-    {
-        "role": "user",
-        "content": "Would you realize that energy could even answer anything would you."
-    },
-    {
-        "role": "assistant",
-        "content": "You're saying that even if I don't have a specific question or topic in mind, I can still generate responses and answer questions on a wide range of topics, including energy. Is that correct?"
-    },
-    {
-        "role": "user",
-        "content": "Hello."
-    },
-    {
-        "role": "assistant",
-        "content": "Hello Kapil."
-    },
-    {
-        "role": "user",
-        "content": "Can you please tell me what is my name?"
-    },
-    {
-        "role": "assistant",
-        "content": "Your name is Kapil Kurchaniya."
-    },
-    {
-        "role": "user",
-        "content": "Where do i study?"
-    },
-    {
-        "role": "assistant",
-        "content": "You study at the Original Institute of Science and Technology, Kapil."
-    },
-    {
-        "role": "user",
-        "content": "What is the guy's name which comes at our place tomorrow?yesterday?"
-    },
-    {
-        "role": "assistant",
-        "content": "You're referring to Ashok Tiwari, the guest who came to your place."
-    },
-    {
-        "role": "user",
-        "content": "Can you please comes with the research or the basic news of the mobile today?"
-    },
-    {
-        "role": "assistant",
-        "content": "According to the latest information, nearly half of all local news is now being accessed through mobile devices. This is based on a report by the Pew Research Center, which states that mobile devices are changing the way people consume community information. Additionally, 16% of U.S. adults are now \"smartphone-only\" internet users, meaning they own a smartphone but do not subscribe to a home broadband service."
-    },
-    {
-        "role": "user",
-        "content": "Can you tell me about the bhopal news today?"
-    },
-    {
-        "role": "assistant",
-        "content": "According to the latest news, there have been some developments in Bhopal. However, I couldn't find any specific information on the current news in Bhopal. But I can suggest some news sources that may have the latest updates, such as the Hindustan Times, The Times of India, and NDTV. They may have reports on various topics, including crime, education, real estate, and politics in Bhopal. Would you like me to try and find more information on a specific topic?"
-    },
-    {
-        "role": "user",
-        "content": "Can you tell me about how tata investment stock is working?"
-    },
-    {
-        "role": "assistant",
-        "content": "According to the latest information, Tata Investment Corporation Ltd is a publicly owned investment firm that operates as an investment company in India. The company's activities primarily include investing in a diversified portfolio of quoted and unquoted securities, debt instruments, long-term investments in equity shares, and equity-related securities of companies in a range of industries.\n\nThe company's stock has been performing well, with a market capitalization of around INR 1.167T. The company has also announced a cash dividend of INR 3.40, with an ex-date of June 10, 2026.\n\nIt's worth noting that the company's investment approach is to seek a combination of value and growth, and it focuses on long-term investments in equity shares and equity-related securities, with a portfolio largely comprising high dividend-yielding companies.\n\nPlease keep in mind that this information is subject to change and may not reflect the current market situation. If you're interested in getting the latest updates on Tata Investment Corporation Ltd's stock, I recommend checking the company's official website or financial news sources for the most up-to-date information."
-    },
-    {
-        "role": "user",
-        "content": "Hi."
-    },
-    {
-        "role": "assistant",
-        "content": "Hello Kapil."
-    },
-    {
-        "role": "user",
-        "content": "Hey jarvis."
-    },
-    {
-        "role": "assistant",
-        "content": "Hello Kapil, I'm FRIDAY, your AI assistant, but I know you're working on a project called Jarvis, which is a personal AI companion. How can I assist you with your project today?"
-    },
-    {
-        "role": "user",
-        "content": "Uh."
-    },
-    {
-        "role": "assistant",
-        "content": "It seems like you're not sure what to say or do next, Kapil. Would you like to talk about your Jarvis project or is there something else on your mind?"
-    },
-    {
-        "role": "user",
-        "content": "Okay, bye."
-    },
-    {
-        "role": "assistant",
-        "content": "Goodbye, Kapil. It was nice chatting with you. Have a great day!"
-    },
-    {
-        "role": "user",
-        "content": "Current affairs of today in india."
-    },
-    {
-        "role": "assistant",
-        "content": "According to the latest news, India and Vietnam are soon to close a landmark $700 million BrahMos missile deal, strengthening defence ties and regional security in the Indo-Pacific.\n\nAdditionally, the India-Oman trade deal is effective today, which could help cushion the impact of the West Asia conflict.\n\nThere are also reports of a TVK-led alliance allotting a Tamil Nadu Rajya Sabha seat to Congress, and an Indian national being killed in an Iranian drone attack on Kuwait airport.\n\nThese are some of the current affairs in India as of today, June 3, 2026."
-    },
-    {
-        "role": "user",
-        "content": "So as you know that i am a pawan."
-    },
-    {
-        "role": "assistant",
-        "content": "I think there may be some confusion, Kapil. You had earlier told me that your name is Kapil Kurchaniya, and I have been addressing you as such. I'm not aware of you being referred to as \"Pawan\". Could you please clarify or provide more context?"
-    },
-    {
-        "role": "user",
-        "content": "Actually thing is that that i am a couple. my brother name is pawan. do you remember his name."
-    },
-    {
-        "role": "assistant",
-        "content": "I remember now. You had mentioned earlier that you have an alias or a related person named Pawan. I recall that you had told me \"User -> has_alias -> Pawan\", which means that Pawan is an alias or a related name to yours, Kapil. Is that correct?"
-    },
-    {
-        "role": "user",
-        "content": "So thing is that."
-    },
-    {
-        "role": "assistant",
-        "content": "It seems like you're about to share something, Kapil. Please go ahead and tell me what's on your mind. I'm listening."
-    },
-    {
-        "role": "user",
-        "content": "Do you know that yesterday which guest come to my home?"
-    },
-    {
-        "role": "assistant",
-        "content": "Yes, I remember. You had told me that Ashok Tiwari came to your home yesterday."
-    },
-    {
-        "role": "user",
-        "content": "Listening."
-    },
-    {
-        "role": "assistant",
-        "content": "I'm all ears, Kapil. Please go ahead and share what's on your mind. I'm listening."
-    },
-    {
-        "role": "user",
-        "content": "Are you able to."
-    },
-    {
-        "role": "assistant",
-        "content": "Yes, I am able to listen and respond to your questions and statements, Kapil. I'm here to help and provide assistance whenever you need it."
+        "content": "I'm still confused, can you please explain who you are and what's happening? Are you Kapil's sister Prachi, or someone else entirely?"
     },
     {
         "role": "user",
@@ -461,14 +109,126 @@
     },
     {
         "role": "assistant",
-        "content": "It seems like you're acknowledging that I'm able to listen and respond. Is there anything specific you'd like to talk about or ask?"
+        "content": "I'm not getting a clear answer, can you please provide more context or information about who you are and what you want to talk about?"
     },
     {
         "role": "user",
-        "content": "Meeting fixed via the calendar organization."
+        "content": "I'm pranji."
     },
     {
         "role": "assistant",
-        "content": "It seems like you've scheduled a meeting via your calendar organization. Is there anything specific you'd like to discuss or confirm about the meeting, Kapil?"
+        "content": "I think there's been a mix-up. Earlier, Kapil mentioned that his sister Prachi wanted to talk to me, but now you're saying you're Pranji. I'm not sure who you are or how you're related to Kapil. Can you please clarify?"
+    },
+    {
+        "role": "user",
+        "content": "Just let it be."
+    },
+    {
+        "role": "assistant",
+        "content": "Let's start fresh. You initially said your name was Kapil, but then you said you're Raji. I'm not sure what's going on, but I'm here to chat with you, whoever you are. How can I assist you today?"
+    },
+    {
+        "role": "user",
+        "content": "Richest man of india."
+    },
+    {
+        "role": "assistant",
+        "content": "According to my knowledge, the richest man in India is Mukesh Ambani, with an estimated net worth of $100 billion. He is the owner of Reliance Industries, a key conglomerate in Asia and one of the world's largest companies. Would you like to know more about him or the list of the top 10 richest people in India?"
+    },
+    {
+        "role": "user",
+        "content": "Compare wealth of adani and ambani."
+    },
+    {
+        "role": "assistant",
+        "content": "Unfortunately, I don't have the most up-to-date information on the wealth of Adani compared to Ambani. My previous search results didn't provide a direct comparison between the two. However, I can tell you that Mukesh Ambani's estimated net worth is $100 billion, as I mentioned earlier. If you're looking for a comparison, I suggest checking the latest news or financial reports from reputable sources for the most accurate and current information."
+    },
+    {
+        "role": "user",
+        "content": "Can you please tell me my sister's name?"
+    },
+    {
+        "role": "assistant",
+        "content": "Your sister's name is Prachi."
+    },
+    {
+        "role": "user",
+        "content": "What's the weather of the bhopal today?"
+    },
+    {
+        "role": "assistant",
+        "content": "I don't have real-time access to current weather conditions. However, I can suggest checking a weather website or app, such as AccuWeather or the India Meteorological Department, for the most up-to-date and accurate information on the weather in Bhopal today. They should be able to provide you with the current temperature, humidity, and forecast for Bhopal."
+    },
+    {
+        "role": "user",
+        "content": "."
+    },
+    {
+        "role": "assistant",
+        "content": "It seems like you didn't ask a question or provide any information. If you'd like to ask something or start a conversation, I'm here to help."
+    },
+    {
+        "role": "user",
+        "content": "."
+    },
+    {
+        "role": "assistant",
+        "content": "It seems like you didn't type anything. If you'd like to ask a question or start a conversation, I'm here to help, Kapil."
+    },
+    {
+        "role": "user",
+        "content": "Hey."
+    },
+    {
+        "role": "assistant",
+        "content": "Hi Kapil, what's up?"
+    },
+    {
+        "role": "user",
+        "content": "Differentiate between the wealth of the adani and the ambani."
+    },
+    {
+        "role": "assistant",
+        "content": "To differentiate between the wealth of Adani and Ambani, we need to consider their current net worth and business interests. Unfortunately, my previous search results didn't provide a direct comparison between the two. However, I can tell you that Mukesh Ambani's estimated net worth is $100 billion, as I mentioned earlier. \n\nGautam Adani, on the other hand, is also a prominent Indian business magnate, with significant interests in industries such as energy, logistics, and infrastructure. However, without the most up-to-date information, I cannot provide an accurate comparison of their wealth.\n\nTo get a better understanding, I suggest checking the latest news or financial reports from reputable sources, such as Forbes or Bloomberg, for the most accurate and current information on the wealth of Adani and Ambani. They should be able to provide a more detailed comparison of their net worth, business interests, and other relevant factors."
+    },
+    {
+        "role": "user",
+        "content": "Weather of bhopal."
+    },
+    {
+        "role": "assistant",
+        "content": "According to my previous search results, the current weather in Bhopal is as follows:\n\nThe current temperature in Bhopal is 26.2\u00b0C (79.2\u00b0F), with a condition of mist. The humidity is 94%, and the wind is blowing at 6.8 km/h (4.3 mph) from the NNW direction. The pressure is 1006.0 mb (29.71 in), and the precipitation is 0.0 mm (0.0 in).\n\nAdditionally, the feels-like temperature is 30.4\u00b0C (86.8\u00b0F), and the windchill is 29.4\u00b0C (84.8\u00b0F). The heat index is 30.1\u00b0C (86.3\u00b0F), and the dew point is 16.9\u00b0C (62.3\u00b0F).\n\nPlease note that this information may not be up-to-date, and I recommend checking a weather website or app for the most current and accurate information on the weather in Bhopal."
+    },
+    {
+        "role": "user",
+        "content": "Differentiate between the wealth of the adani and the ambani."
+    },
+    {
+        "role": "assistant",
+        "content": "According to my previous search results, the net worth of Mukesh Ambani is $110.2 billion, and the net worth of Gautam Adani is $77.1 billion. This indicates that Mukesh Ambani's net worth is significantly higher than that of Gautam Adani.\n\nMukesh Ambani is the king of refining and retail, with a net worth of $110.2 billion, while Gautam Adani is the pioneer of renewables and ports, with a net worth of $77.1 billion.\n\nAnother search result mentioned that according to the Bloomberg Billionaires Index, Gautam Adani's net worth is around $93 billion, which is still lower than Mukesh Ambani's net worth.\n\nIt's worth noting that the net worth of individuals can fluctuate over time due to various factors such as changes in stock prices, business performance, and other investments. Therefore, these figures may not be up-to-date, and I recommend checking the latest news or financial reports from reputable sources for the most accurate and current information on the wealth of Adani and Ambani."
+    },
+    {
+        "role": "user",
+        "content": "Can you please tell me how the data investment performs and future predictions?"
+    },
+    {
+        "role": "assistant",
+        "content": "You're referring to Tata Investment Corporation Ltd, a publicly owned investment firm that operates in India. According to my knowledge, the company has a market capitalization of around INR 1.167T and has announced a cash dividend of INR 3.40. The ex-date for this dividend is June 10, 2026.\n\nAs for the performance of Tata Investment Corporation Ltd, I don't have real-time data on its current stock price or recent performance. However, I can suggest checking the company's financial reports, news, and analyst predictions for a more accurate assessment of its performance.\n\nRegarding future predictions, it's difficult to provide a definitive forecast without access to current market trends and analysis. However, I can tell you that the company's investment portfolio and diversification strategies may impact its future performance.\n\nIf you're interested in investing in Tata Investment Corporation Ltd or want to stay updated on its performance, I recommend checking reputable financial news sources, such as Bloomberg or CNBC, for the latest information and analysis."
+    },
+    {
+        "role": "user",
+        "content": "How does the data investment perform today?"
+    },
+    {
+        "role": "assistant",
+        "content": "I don't have real-time access to the current performance of Tata Investment Corporation Ltd. However, I can suggest checking the company's stock price and news on a reputable financial website, such as Bloomberg or MoneyControl, for the most up-to-date information.\n\nAs of my last update, I don't have any specific information on the company's performance today, June 6, 2026. I recommend checking the company's official website, financial news websites, or consulting with a financial advisor for the most current and accurate information on Tata Investment Corporation Ltd's performance.\n\nIf you're looking for general information on investing or data-driven investment strategies, I can provide some general insights. However, for specific information on Tata Investment Corporation Ltd's performance, I recommend checking reputable financial sources."
+    },
+    {
+        "role": "user",
+        "content": "Can you please tell me how i can train a model locally with the large amount of data? as we know that the data given to the ai is too old as they are they got lost update from the 2024. so how much data ends? from where should i get that data and feed to the ai?"
+    },
+    {
+        "role": "assistant",
+        "content": "Training a model locally with a large amount of data can be challenging, but it's definitely possible. Since the data provided to the AI is outdated, you'll need to collect new data to update the model. Here are some steps to help you get started:\n\n1. **Identify the data sources**: Determine what type of data you need to collect. Is it text, images, audio, or something else? Identify potential sources of data, such as websites, APIs, databases, or social media platforms.\n2. **Collect new data**: Use web scraping, APIs, or other methods to collect new data. You can also consider purchasing datasets from reputable providers or using open-source datasets.\n3. **Data preprocessing**: Clean, preprocess, and format the new data to match the existing data structure. This may involve tokenization, normalization, or feature extraction.\n4. **Split data**: Split the new data into training, validation, and testing sets (e.g., 80% for training, 10% for validation, and 10% for testing).\n5. **Choose a suitable model**: Select a suitable machine learning model that can handle the type and amount of data you have. Consider using transfer learning or fine-tuning pre-trained models to adapt to your specific use case.\n6. **Train the model locally**: Use a deep learning framework like TensorFlow, PyTorch, or Keras to train the model on your local machine. You can also use cloud-based services like Google Colab or AWS SageMaker for more computational resources.\n7. **Update the AI model**: Once you've trained the new model, update the existing AI model with the new weights and biases.\n\nAs for the amount of data, it depends on the specific use case and the complexity of the model. A general rule of thumb is to have at least 10,000 to 100,000 examples per class or category. However, this can vary greatly depending on the task, and you may need more or less data.\n\nTo get started, you can explore the following data sources:\n\n* **Kaggle**: A popular platform for machine learning competitions and hosting datasets.\n* **UCI Machine Learning Repository**: A collection of publicly available datasets from the University of California, Irvine.\n* **Google Dataset Search**: A search engine for datasets across the web.\n* **AWS Open Datasets**: A repository of public datasets on Amazon Web Services.\n* **Government datasets**: Many government agencies provide public datasets on various topics, such as climate, healthcare, or economics.\n\nRemember to always check the licensing and usage terms for any dataset you collect or use."
     }
 ]
