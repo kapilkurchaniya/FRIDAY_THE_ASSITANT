@@ -1,0 +1,13 @@
+.git
+.vercel
+.env
+.venv
+.codex-venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+Data/chroma_db
+Data/speech.mp3
+install-output.txt

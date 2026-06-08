@@ -1,15 +1,15 @@
 import cohere
 from groq import Groq
 from rich import print
-from dotenv import dotenv_values
+from Backend.env import load_env
 
-env_vars = dotenv_values(".env")
+env_vars = load_env()
 
 CohereAPIKey = env_vars.get("CohereAPIKey")
 GroqAPIKey = env_vars.get("GroqAPIKey")
 
-co = cohere.Client(api_key=CohereAPIKey)
-groq_client = Groq(api_key=GroqAPIKey)
+co = cohere.Client(api_key=CohereAPIKey or "missing")
+groq_client = Groq(api_key=GroqAPIKey or "missing")
 
 funcs = [
     'exit', 'general', 'realtime', 'open', 'close', 'play',

@@ -1,0 +1,5 @@
+[project]
+name = "app"
+version = "0.1.0"
+dependencies = [ "python-dotenv", "groq", "bs4", "pillow", "rich", "requests", "cohere", "googlesearch-python", "mtranslate", "edge-tts", "tavily-python", "flask", "flask-cors", "gtts" ]
+requires-python = "~=3.12.0"

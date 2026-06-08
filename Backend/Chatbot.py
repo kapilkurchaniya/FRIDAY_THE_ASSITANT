@@ -1,15 +1,15 @@
 from groq import Groq
 from json import load, dump
 import datetime
-from dotenv import dotenv_values
+from Backend.env import chat_log_path, load_env
 
-env_vars = dotenv_values('.env')
+env_vars = load_env()
 
 Username = env_vars.get("Username")
 Assistantname = env_vars.get("Assistantname")
 GroqAPIKey = env_vars.get("GroqAPIKey")
 
-client = Groq(api_key=GroqAPIKey)
+client = Groq(api_key=GroqAPIKey or "missing")
 
 messages = []
 
@@ -24,10 +24,10 @@ SystemChatbot = [
 ]
 
 try:
-    with open(r"Data\\ChatLog.json",'r') as f:
+    with open(chat_log_path(),'r') as f:
         messages = load(f)
 except FileNotFoundError:
-    with open(r"Data\\ChatLog.json",'w') as f:
+    with open(chat_log_path(),'w') as f:
         dump([],f)
 
 def RealtimeInformation():
@@ -54,7 +54,7 @@ def AnswerModifier(Answer):
 def ChatBot(Query):
 
     try:
-        with open(r"Data\\ChatLog.json",'r') as f:
+        with open(chat_log_path(),'r') as f:
             messages = load(f)
         
         messages.append({"role":"user","content":f"{Query}"})
@@ -131,7 +131,7 @@ def ChatBot(Query):
 
         messages.append({"role":"assistant","content":Answer})
 
-        with open('Data\\ChatLog.json','w') as f:
+        with open(chat_log_path(),'w') as f:
             dump(messages, f, indent=4)
             
         # Spawn background thread to extract new memories
@@ -144,7 +144,7 @@ def ChatBot(Query):
     except Exception as e:
         print(f"Error: {e}")
 
-        with open('Data\\ChatLog.json','w') as f:
+        with open(chat_log_path(),'w') as f:
             dump([], f, indent=4)
         return ChatBot(Query=Query)
 

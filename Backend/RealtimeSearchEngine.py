@@ -1,19 +1,23 @@
 from tavily import TavilyClient
 from groq import Groq
+import cohere
 from json import load, dump
 import datetime
-from dotenv import dotenv_values
+from Backend.env import chat_log_path, load_env
 
 
-env_vars = dotenv_values('.env')
+env_vars = load_env()
 
 Username = env_vars.get("Username")
 Assistantname = env_vars.get("Assistantname")
 GroqAPIKey = env_vars.get("GroqAPIKey")
 TavilyAPIKey = env_vars.get("TAVILY_API_KEY")
+CohereAPIKey = env_vars.get("CohereAPIKey")
+GoogleAPIKey = env_vars.get("GOOGLE_API_KEY")
+MistralAPIKey = env_vars.get("MISTRAL_API_KEY")
 
-client = Groq(api_key=GroqAPIKey)
-tavily_client = TavilyClient(api_key=TavilyAPIKey)
+client = Groq(api_key=GroqAPIKey or "missing")
+tavily_client = TavilyClient(api_key=TavilyAPIKey or "missing")
 messages = []
 
 System = f"""Hello, I am {Username}, You are a very accurate and advanced AI chatbot named {Assistantname} which has real-time up-to-date information from the internet.
@@ -21,10 +25,10 @@ System = f"""Hello, I am {Username}, You are a very accurate and advanced AI cha
 *** Just answer the question from the provided data in a professional way. ***"""
 
 try:
-    with open(r"Data\\ChatLog.json",'r') as f:
+    with open(chat_log_path(),'r') as f:
         messages = load(f)
 except FileNotFoundError:
-    with open(r"Data\\ChatLog.json",'w') as f:
+    with open(chat_log_path(),'w') as f:
         dump([],f)
 
 def GoogleSearch(Query):
@@ -97,7 +101,7 @@ def Information():
 def RealtimeSearchEngine(prompt):
     global SystemChatBot,messages
 
-    with open(r"Data\\ChatLog.json",'r') as f:
+    with open(chat_log_path(),'r') as f:
         messages = load(f)
         
     messages.append({"role":"user","content":f"{prompt}"})
@@ -152,25 +156,101 @@ def RealtimeSearchEngine(prompt):
             continue
     
     if not Answer:
-        print("[WARNING] All Groq models failed. Attempting HuggingFace fallback...")
+        print("[WARNING] All Groq models failed. Attempting Cohere fallback...")
         try:
-            import requests
-            hf_api_key = env_vars.get("HuggingFaceAPIKey", "").strip()
-            if hf_api_key:
-                hf_url = "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct"
-                headers = {"Authorization": f"Bearer {hf_api_key}"}
-                prompt_text = "System: " + "\n".join([m['content'] for m in system_messages]) + f"\nUser: {prompt}\nAssistant:"
-                hf_payload = {"inputs": prompt_text, "parameters": {"max_new_tokens": 512, "temperature": 0.5}}
-                res = requests.post(hf_url, headers=headers, json=hf_payload, timeout=15)
-                if res.status_code == 200:
-                    out = res.json()
-                    if isinstance(out, list) and len(out) > 0 and 'generated_text' in out[0]:
-                        Answer = out[0]['generated_text'].split("Assistant:")[-1].strip()
-                        print("[INFO] HuggingFace fallback succeeded.")
+            if CohereAPIKey and CohereAPIKey.strip():
+                co_client = cohere.Client(api_key=CohereAPIKey)
+                # Build chat history compatible with Cohere's chat API
+                chat_history = []
+                for m in system_messages:
+                    chat_history.append({
+                        "role": m.get("role", "system"),
+                        "message": m.get("content", "")
+                    })
+                valid_messages = [msg for msg in messages if msg.get("content") and str(msg.get("content")).strip()]
+                for m in valid_messages:
+                    chat_history.append({
+                        "role": m.get("role", "user"),
+                        "message": m.get("content", "")
+                    })
+
+                stream = co_client.chat_stream(
+                    model='command-a-03-2025',
+                    message=prompt,
+                    temperature=0.7,
+                    chat_history=chat_history,
+                    preamble=System,
+                )
+
+                for event in stream:
+                    if getattr(event, 'event_type', None) == 'text-generation':
+                        Answer += event.text
+
+                if Answer:
+                    print("[INFO] Cohere fallback succeeded.")
                 else:
-                    print(f"[ERROR] HuggingFace API returned {res.status_code}: {res.text}")
-        except Exception as hf_err:
-            print(f"[ERROR] HuggingFace fallback failed: {hf_err}")
+                    print("[WARNING] Cohere returned no answer.")
+            else:
+                print("[WARNING] No Cohere API key configured; skipping Cohere fallback.")
+        except Exception as coh_err:
+            print(f"[ERROR] Cohere fallback failed: {coh_err}")
+
+        # If still no answer, attempt Mistral HTTP fallback
+        if not Answer:
+            print("[INFO] Attempting Mistral fallback...")
+            try:
+                if MistralAPIKey and MistralAPIKey.strip():
+                    import requests
+                    mistral_url = "https://api.mistral.ai/v1/models/mistral-large/outputs"
+                    headers = {"Authorization": f"Bearer {MistralAPIKey}", "Content-Type": "application/json"}
+                    payload = {"input": prompt, "parameters": {"max_new_tokens": 512, "temperature": 0.7}}
+                    res = requests.post(mistral_url, headers=headers, json=payload, timeout=15)
+                    if res.status_code == 200:
+                        data = res.json()
+                        # Try several common response shapes
+                        text = ""
+                        if isinstance(data, dict):
+                            if 'outputs' in data:
+                                for o in data.get('outputs', []):
+                                    text_piece = o.get('content') or o.get('text') or ''
+                                    text += text_piece
+                            if not text and 'result' in data:
+                                text = data.get('result', '')
+                            if not text and 'generated_text' in data:
+                                text = data.get('generated_text', '')
+                        if text:
+                            Answer = text
+                            print("[INFO] Mistral fallback succeeded.")
+                        else:
+                            print(f"[WARNING] Mistral returned no usable text. Response keys: {list(data.keys()) if isinstance(data, dict) else 'unknown'}")
+                    else:
+                        print(f"[ERROR] Mistral API returned {res.status_code}: {res.text}")
+                else:
+                    print("[WARNING] No MISTRAL_API_KEY configured; skipping Mistral fallback.")
+            except Exception as mistral_err:
+                print(f"[ERROR] Mistral fallback failed: {mistral_err}")
+
+        # Final fallback: HuggingFace (if configured)
+        if not Answer:
+            print("[INFO] Attempting HuggingFace fallback...")
+            try:
+                import requests
+                hf_api_key = env_vars.get("HuggingFaceAPIKey", "").strip()
+                if hf_api_key:
+                    hf_url = "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct"
+                    headers = {"Authorization": f"Bearer {hf_api_key}"}
+                    prompt_text = "System: " + "\n".join([m['content'] for m in system_messages]) + f"\nUser: {prompt}\nAssistant:"
+                    hf_payload = {"inputs": prompt_text, "parameters": {"max_new_tokens": 512, "temperature": 0.5}}
+                    res = requests.post(hf_url, headers=headers, json=hf_payload, timeout=15)
+                    if res.status_code == 200:
+                        out = res.json()
+                        if isinstance(out, list) and len(out) > 0 and 'generated_text' in out[0]:
+                            Answer = out[0]['generated_text'].split("Assistant:")[-1].strip()
+                            print("[INFO] HuggingFace fallback succeeded.")
+                    else:
+                        print(f"[ERROR] HuggingFace API returned {res.status_code}: {res.text}")
+            except Exception as hf_err:
+                print(f"[ERROR] HuggingFace fallback failed: {hf_err}")
 
     if not Answer:
         return "I'm having trouble connecting to my AI models right now.", raw_results
@@ -178,7 +258,7 @@ def RealtimeSearchEngine(prompt):
     Answer = Answer.strip().replace("</s>","")
     messages.append({"role":"assistant","content":Answer})
     
-    with open(r"Data\ChatLog.json",'w') as f:
+    with open(chat_log_path(),'w') as f:
         dump(messages, f, indent=4)
         
     # Spawn background thread to extract new memories

@@ -14,7 +14,6 @@ except ImportError:
     search = None; playonyt = None
 
 from webbrowser import open as webopen
-from dotenv import dotenv_values
 from bs4 import BeautifulSoup
 from rich import print
 from groq import Groq
@@ -23,8 +22,9 @@ import subprocess
 import requests
 import asyncio
 import os
+from Backend.env import load_env
 
-env_vars = dotenv_values('.env')
+env_vars = load_env()
 GroqAPIKey = env_vars.get("GroqAPIKey")
 Username = env_vars.get("Username")
 
@@ -36,7 +36,7 @@ classes = [
     'LWkfKe','VQF4g','qv3Wpe','kno-rdesc','SPZz6b'
 ]
 
-client = Groq(api_key=GroqAPIKey)
+client = Groq(api_key=GroqAPIKey or "missing")
 
 professional_responses = [
     "Your satisfaction is my top priority; feel free to reach out if there's anything else I can help you with.",
