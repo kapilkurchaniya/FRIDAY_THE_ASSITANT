@@ -4,21 +4,14 @@ import json
 import concurrent.futures
 from flask import Flask, render_template, request, jsonify, send_file
 from flask_cors import CORS
-from dotenv import dotenv_values
 from asyncio import run
 import asyncio
-
-# Import existing backend modules
-from Backend.Model import FirstLayerDMM
-from Backend.RealtimeSearchEngine import RealtimeSearchEngine
-from Backend.Automation import Automation
-from Backend.Chatbot import ChatBot
-from Backend.TextToSpeech import TextToAudioFile
+from Backend.env import load_env, speech_path
 
 app = Flask(__name__, template_folder='Frontend/templates', static_folder='Frontend')
 CORS(app)
 
-env_vars = dotenv_values('.env')
+env_vars = load_env()
 Username = env_vars.get('Username', 'User')
 Assistantname = env_vars.get('Assistantname', 'Friday')
 
@@ -72,6 +65,12 @@ def process_query():
                 "decision": ["general"],
                 "audio_available": False
             }), 200
+
+        from Backend.Automation import Automation
+        from Backend.Chatbot import ChatBot
+        from Backend.Model import FirstLayerDMM
+        from Backend.RealtimeSearchEngine import RealtimeSearchEngine
+        from Backend.TextToSpeech import TextToAudioFile
 
         try:
             print(f"[INFO] Routing query to FirstLayerDMM: '{Query}'")
@@ -146,7 +145,7 @@ def process_query():
                     break
 
         # Generate Audio for the answer
-        audio_path = os.path.join(os.getcwd(), 'Data', 'speech.mp3')
+        audio_path = speech_path()
         try:
             run_with_timeout(lambda: asyncio.run(TextToAudioFile(Answer)), timeout=15)
         except Exception as e:
@@ -173,7 +172,7 @@ def process_query():
 
 @app.route('/api/audio')
 def get_audio():
-    audio_path = os.path.join(os.getcwd(), 'Data', 'speech.mp3')
+    audio_path = speech_path()
     if os.path.exists(audio_path):
         # send_file requires cache invalidation if it changes, we add anti-cache headers in response
         response = send_file(audio_path, mimetype="audio/mpeg")

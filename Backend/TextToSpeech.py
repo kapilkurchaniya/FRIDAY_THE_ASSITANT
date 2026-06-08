@@ -7,14 +7,14 @@ import random
 import asyncio
 import edge_tts
 import os
-from dotenv import dotenv_values
+from Backend.env import load_env, speech_path
 
-env_vars = dotenv_values(".env")
+env_vars = load_env()
 
 AssistantVoice = env_vars.get('AssistantVoice')
 
 async def TextToAudioFile(text) -> None:
-    file_path = r"Data\\speech.mp3"
+    file_path = speech_path()
 
     if os.path.exists(file_path):
         os.remove(file_path)
@@ -45,7 +45,7 @@ def TTS(Text, func=lambda r=None: True):
 
             pygame.mixer.init()
 
-            pygame.mixer.music.load(r"Data\\speech.mp3")
+            pygame.mixer.music.load(speech_path())
             pygame.mixer.music.play()
 
             while pygame.mixer.music.get_busy():
