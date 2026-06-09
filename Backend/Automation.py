@@ -120,7 +120,7 @@ def Content(Topic):
     OpenNotepad(rf"Data\\{Topic.lower().replace(' ','')}.txt")
     return True
 
-# Content("Write a application for a 3 days sick leave from office as a managing director of the Bhavya limited company")
+# Content("Write a application for a 3 days sick leave from office as a managing director of the kapil-k15 limited company")
 
 def YoutubeSearch(query):
     print("Running...")
