@@ -17,6 +17,20 @@ GoogleAPIKey = env_vars.get("GOOGLE_API_KEY")
 MistralAPIKey = env_vars.get("MISTRAL_API_KEY")
 
 client = Groq(api_key=GroqAPIKey or "missing")
+
+def truncate_messages(messages, max_chars=9500):
+    trimmed = messages.copy()
+    total_chars = sum(len(str(msg.get("content", ""))) for msg in trimmed)
+    while total_chars > max_chars and len(trimmed) > 1:
+        for idx, msg in enumerate(trimmed):
+            if msg.get("role") != "system":
+                total_chars -= len(str(msg.get("content", "")))
+                del trimmed[idx]
+                break
+        else:
+            break
+    return trimmed
+
 tavily_client = TavilyClient(api_key=TavilyAPIKey or "missing")
 messages = []
 
@@ -126,18 +140,16 @@ def RealtimeSearchEngine(prompt):
     models = [
         "llama-3.3-70b-versatile",
         "llama-3.1-8b-instant",
-        "llama3-70b-8192",
-        "llama3-8b-8192",
-        "mixtral-8x7b-32768",
     ]
 
     Answer = ""
     for model in models:
         try:
             valid_messages = [msg for msg in messages if msg.get("content") and str(msg.get("content")).strip()]
+            request_messages = truncate_messages(system_messages + [{"role":"system","content":Information()}] + valid_messages)
             completion = client.chat.completions.create(
                 model=model,
-                messages=system_messages + [{"role":"system","content":Information()}] + valid_messages,
+                messages=request_messages,
                 temperature=0.7,
                 max_tokens=2048,
                 top_p=1,
