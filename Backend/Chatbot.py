@@ -1,4 +1,5 @@
 from groq import Groq
+import cohere
 from json import load, dump
 import datetime
 from Backend.env import chat_log_path, load_env
@@ -8,10 +9,24 @@ env_vars = load_env()
 Username = env_vars.get("Username")
 Assistantname = env_vars.get("Assistantname")
 GroqAPIKey = env_vars.get("GroqAPIKey")
+CohereAPIKey = env_vars.get("CohereAPIKey")
 
 client = Groq(api_key=GroqAPIKey or "missing")
 
 messages = []
+
+def truncate_messages(messages, max_chars=9000):
+    trimmed = messages.copy()
+    total_chars = sum(len(str(msg.get("content", ""))) for msg in trimmed)
+    while total_chars > max_chars and len(trimmed) > 1:
+        for idx, msg in enumerate(trimmed):
+            if msg.get("role") != "system":
+                total_chars -= len(str(msg.get("content", "")))
+                del trimmed[idx]
+                break
+        else:
+            break
+    return trimmed
 
 System = f"""Hello, I am {Username}, You are a very accurate and advanced AI chatbot named {Assistantname} which also has real-time up-to-date information from the internet.
 *** Do not tell time until I ask, do not talk too much, just answer the question.***
@@ -60,6 +75,7 @@ def ChatBot(Query):
         messages.append({"role":"user","content":f"{Query}"})
 
         # Retrieve context from Memory
+        memory_context = None
         try:
             from Backend.Memory.Retriever import retrieve_context
             memory_context = retrieve_context(Query)
@@ -75,37 +91,73 @@ def ChatBot(Query):
         models = [
             "llama-3.3-70b-versatile",
             "llama-3.1-8b-instant",
-            "llama3-70b-8192",
-            "llama3-8b-8192",
-            "mixtral-8x7b-32768",
         ]
 
         Answer = ""
         for model in models:
             valid_messages = [msg for msg in messages if msg.get("content") and str(msg.get("content")).strip()]
+            request_messages = truncate_messages(system_messages + valid_messages)
             try:
                 completion = client.chat.completions.create(
                     model=model,
-                    messages=system_messages + valid_messages,
+                    messages=request_messages,
                     max_tokens=1024,
                     temperature=0.1,
                     top_p=1,
                     stream=True,
                     stop=None
                 )
-        
+
                 for chunk in completion:
                     if chunk.choices and chunk.choices[0].delta and chunk.choices[0].delta.content:
                         Answer += chunk.choices[0].delta.content
-                
+
                 break
             except Exception as e:
                 print(f"[WARNING] ChatBot Model {model} failed with error: {e}. Trying next model...")
                 Answer = ""
                 continue
-        
+
         if not Answer:
-            print("[WARNING] All Groq models failed. Attempting HuggingFace fallback...")
+            print("[WARNING] All Groq models failed. Attempting Cohere fallback...")
+            try:
+                if CohereAPIKey and CohereAPIKey.strip():
+                    co_client = cohere.Client(api_key=CohereAPIKey)
+                    chat_history = []
+                    for m in system_messages:
+                        chat_history.append({
+                            "role": m.get("role", "system"),
+                            "message": m.get("content", "")
+                        })
+                    for m in valid_messages:
+                        chat_history.append({
+                            "role": m.get("role", "user"),
+                            "message": m.get("content", "")
+                        })
+
+                    stream = co_client.chat_stream(
+                        model='command-a-03-2025',
+                        message=Query,
+                        temperature=0.7,
+                        chat_history=chat_history,
+                        preamble=System,
+                    )
+
+                    for event in stream:
+                        if getattr(event, 'event_type', None) == 'text-generation':
+                            Answer += event.text
+
+                    if Answer:
+                        print("[INFO] Cohere fallback succeeded.")
+                    else:
+                        print("[WARNING] Cohere returned no answer.")
+                else:
+                    print("[WARNING] No Cohere API key configured; skipping Cohere fallback.")
+            except Exception as coh_err:
+                print(f"[ERROR] Cohere fallback failed: {coh_err}")
+
+        if not Answer:
+            print("[WARNING] All Groq/Cohere models failed. Attempting HuggingFace fallback...")
             try:
                 import requests
                 hf_api_key = env_vars.get("HuggingFaceAPIKey", "").strip()
@@ -121,6 +173,8 @@ def ChatBot(Query):
                             print("[INFO] HuggingFace fallback succeeded.")
                     else:
                         print(f"[ERROR] HuggingFace API returned {res.status_code}: {res.text}")
+                else:
+                    print("[WARNING] No HuggingFace API key configured; skipping HuggingFace fallback.")
             except Exception as hf_err:
                 print(f"[ERROR] HuggingFace fallback failed: {hf_err}")
 
@@ -146,7 +200,7 @@ def ChatBot(Query):
 
         with open(chat_log_path(),'w') as f:
             dump([], f, indent=4)
-        return ChatBot(Query=Query)
+        return "I'm having trouble connecting to my AI models right now. Please check the internet connection."
 
 
 # if __name__ == '__main__':
