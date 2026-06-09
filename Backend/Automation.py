@@ -1,5 +1,5 @@
 try:
-    from AppOpener import close, open as appopen
+     from AppOpener import close, open as appopen
 except ImportError:
     appopen = None; close = None
 
