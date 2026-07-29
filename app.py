@@ -44,18 +44,61 @@ def QueryModifier(Query):
 
 Functions = ['open', 'close', 'play', 'system', 'content','google search','youtube search']
 
+import time
+
+last_query_text = ""
+last_query_time = 0.0
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
 @app.route('/api/process', methods=['POST'])
 def process_query():
+    global last_query_text, last_query_time
     try:
         data = request.get_json(silent=True)
         if not data or 'query' not in data:
             return jsonify({"status": "error", "error": "No query provided"}), 400
         
         Query = str(data['query']).strip()
+        now = time.time()
+        if Query.lower() == last_query_text.lower() and (now - last_query_time) < 4.0:
+            print(f"[WARNING] Duplicate query received within 4s ('{Query}'). Short-circuiting duplicate request.")
+            return jsonify({
+                "status": "success",
+                "answer": "",
+                "search_data": [],
+                "decision": ["general"],
+                "audio_available": False,
+                "duplicate_ignored": True
+            }), 200
+
+        last_query_text = Query
+        last_query_time = now
+
+        # Check for Shutdown command
+        shutdown_triggers = ['shutdown', 'shut down', 'exit', 'quit', 'turn off', 'stop server', 'goodbye friday', 'bye friday', 'system shutdown']
+        clean_q = Query.lower().strip().replace(".", "").replace("!", "").replace("?", "")
+        if any(trigger in clean_q for trigger in shutdown_triggers) or clean_q in ['shutdown', 'exit', 'quit']:
+            print("[INFO] Shutdown command received. Terminating Flask server and terminal process in 2.5s...")
+            
+            def delayed_shutdown():
+                time.sleep(2.5)
+                print("[INFO] Server and terminal shutdown complete.")
+                os._exit(0)
+
+            executor.submit(delayed_shutdown)
+
+            return jsonify({
+                "status": "success",
+                "answer": "Shutting down all neural networks and terminating server. Goodbye Kapil Boss!",
+                "search_data": [],
+                "decision": ["shutdown"],
+                "audio_available": False,
+                "shutdown": True
+            }), 200
+
         if not Query or len(Query.replace(".", "").strip()) < 2:
             print(f"[INFO] Query too short ('{Query}'). Short-circuiting request.")
             return jsonify({
@@ -179,7 +222,7 @@ def get_audio():
         response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
         return response
     else:
-        return jsonify({"error": "Audio file not found"}), 404
+        return ('', 204)
 
 @app.route('/favicon.ico')
 def favicon():

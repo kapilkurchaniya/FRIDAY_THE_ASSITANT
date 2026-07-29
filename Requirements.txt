@@ -12,3 +12,12 @@ tavily-python
 flask
 flask-cors
 gTTS
+chromadb
+pymongo
+apscheduler
+AppOpener
+keyboard
+pywhatkit
+pygame
+selenium
+webdriver-manager

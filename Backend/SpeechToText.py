@@ -51,32 +51,44 @@ HtmlCode = '''<!DOCTYPE html>
 
 HtmlCode = str(HtmlCode).replace("recognition.lang = '';",f"recognition.lang = '{InputLanguage}';")
 
-with open("Data\\Voice.html",'w') as f:
-    f.write(HtmlCode)
+driver = None
+Link = ""
 
-current_dir = os.getcwd()
+def InitializeDriver():
+    global driver, Link
+    if driver is not None:
+        return
+        
+    current_dir = os.getcwd()
+    Link = f"{current_dir}/Data/Voice.html"
+    
+    # Write the HTML file
+    os.makedirs(os.path.dirname(Link), exist_ok=True)
+    with open(Link, 'w') as f:
+        f.write(HtmlCode)
+        
+    chrome_options = Options()
+    user_agent = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.2 (KHTML, like Gecko) Chrome/22.0.1216.0 Safari/537.2'
+    chrome_options.add_argument(f'user-agent={user_agent}')
+    chrome_options.add_argument("--use-fake-ui-for-media-stream")
+    chrome_options.add_argument("--use-fake-device-for-media-stream")
+    chrome_options.add_argument('--headless=new')
 
-Link = f"{current_dir}/Data/Voice.html"
-chrome_options = Options()
-user_agent = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.2 (KHTML, like Gecko) Chrome/22.0.1216.0 Safari/537.2'
-chrome_options.add_argument(f'user-agent={user_agent}')
-chrome_options.add_argument("--use-fake-ui-for-media-stream")
-chrome_options.add_argument("--use-fake-device-for-media-stream")
-chrome_options.add_argument('--headless=new')
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=chrome_options)
 
-service = Service(ChromeDriverManager().install())
-
-driver = webdriver.Chrome(service=service,options=chrome_options)
-
-TempDirPath = rf"{current_dir}/Frontend/Files"
+TempDirPath = rf"{os.getcwd()}/Frontend/Files"
 
 def SetAssistantStatus(Status):
-    with open(rf"{TempDirPath}/Status.data", 'w',encoding='utf-8') as f:
+    os.makedirs(TempDirPath, exist_ok=True)
+    with open(rf"{TempDirPath}/Status.data", 'w', encoding='utf-8') as f:
         f.write(Status)
 
 def QueryModifier(Query):
     new_query = Query.lower().strip()
     query_words = new_query.split()
+    if not query_words:
+        return "."
     question_words = ['how','what','who','where','when','why','which','whose','whom','can you',"what's","where's","how's"]
 
     if any(word + " " in new_query for word in question_words):
@@ -97,15 +109,15 @@ def UniversalTranslator(Text):
     return english_translation.capitalize()
 
 def SpeechRecognition():
+    InitializeDriver()
     driver.get("file:///" + Link)
-    driver.find_element(by=By.ID,value='start').click()
+    driver.find_element(by=By.ID, value='start').click()
 
     while True:
-
         try:
-            Text = driver.find_element(by=By.ID,value='output').text
+            Text = driver.find_element(by=By.ID, value='output').text
             if Text:
-                driver.find_element(by=By.ID,value='end').click()
+                driver.find_element(by=By.ID, value='end').click()
             
             if InputLanguage.lower() == 'en' or 'en' in InputLanguage.lower():
                 return QueryModifier(Text)

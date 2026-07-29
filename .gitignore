@@ -1,6 +1,8 @@
 # Virtual environment
 .venv/
+.codex-venv/
 env/
+jarvis/
 
 # Only ignore real env files, NOT the example
 .env

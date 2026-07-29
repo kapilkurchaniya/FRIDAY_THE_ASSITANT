@@ -17,7 +17,10 @@ async def TextToAudioFile(text) -> None:
     file_path = speech_path()
 
     if os.path.exists(file_path):
-        os.remove(file_path)
+        try:
+            os.remove(file_path)
+        except Exception as remove_err:
+            print(f"[WARNING] Could not remove old speech file (file locked): {remove_err}")
 
     try:
         print("[INFO] TextToSpeech: Attempting edge-tts...")

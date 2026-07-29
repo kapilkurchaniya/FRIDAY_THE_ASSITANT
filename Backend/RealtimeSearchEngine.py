@@ -213,28 +213,25 @@ def RealtimeSearchEngine(prompt):
             try:
                 if MistralAPIKey and MistralAPIKey.strip():
                     import requests
-                    mistral_url = "https://api.mistral.ai/v1/models/mistral-large/outputs"
+                    mistral_url = "https://api.mistral.ai/v1/chat/completions"
                     headers = {"Authorization": f"Bearer {MistralAPIKey}", "Content-Type": "application/json"}
-                    payload = {"input": prompt, "parameters": {"max_new_tokens": 512, "temperature": 0.7}}
+                    payload = {
+                        "model": "mistral-small-latest",
+                        "messages": [{"role": "user", "content": prompt}],
+                        "temperature": 0.7,
+                        "max_tokens": 512
+                    }
                     res = requests.post(mistral_url, headers=headers, json=payload, timeout=15)
                     if res.status_code == 200:
                         data = res.json()
-                        # Try several common response shapes
                         text = ""
-                        if isinstance(data, dict):
-                            if 'outputs' in data:
-                                for o in data.get('outputs', []):
-                                    text_piece = o.get('content') or o.get('text') or ''
-                                    text += text_piece
-                            if not text and 'result' in data:
-                                text = data.get('result', '')
-                            if not text and 'generated_text' in data:
-                                text = data.get('generated_text', '')
+                        if isinstance(data, dict) and 'choices' in data:
+                            text = data['choices'][0]['message']['content']
                         if text:
                             Answer = text
                             print("[INFO] Mistral fallback succeeded.")
                         else:
-                            print(f"[WARNING] Mistral returned no usable text. Response keys: {list(data.keys()) if isinstance(data, dict) else 'unknown'}")
+                            print(f"[WARNING] Mistral returned no usable text.")
                     else:
                         print(f"[ERROR] Mistral API returned {res.status_code}: {res.text}")
                 else:
