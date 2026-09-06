@@ -1,4 +1,4 @@
-# FRIDAY (JARVIS) — Modular AI Assistant
+ # FRIDAY (JARVIS) — Modular AI Assistant
 
 FRIDAY (also known as JARVIS) is a modular AI assistant that combines:
 - an **LLM-based intent router** (Decision Making Model)
